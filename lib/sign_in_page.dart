@@ -1,16 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
+import 'package:flutter_lovers/model/user_model.dart';
+import 'package:flutter_lovers/services/auth_base.dart';
 
 class SignInPage extends StatelessWidget {
-  final Function(FirebaseUser) onSingIn;
+  final Function(User) onSingIn;
+  final AuthBase authService;
 
-  const SignInPage({Key key, @required this.onSingIn}) : super(key: key);
+  const SignInPage(
+      {Key key, @required this.authService, @required this.onSingIn})
+      : super(key: key);
 
   void _misafirGirisi() async {
-    AuthResult sonuc = await FirebaseAuth.instance.signInAnonymously();
-    onSingIn(sonuc.user);
-    print("Oturum açan user id:" + sonuc.user.uid.toString());
+    User _user = await authService.singInAnonymously();
+    onSingIn(_user);
+    print("Oturum açan user id:" + _user.userID.toString());
   }
 
   @override

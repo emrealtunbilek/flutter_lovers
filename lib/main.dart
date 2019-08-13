@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/landing_page.dart';
-import 'package:flutter_lovers/sign_in_page.dart';
+import 'package:flutter_lovers/services/fake_auth_service.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,7 +13,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      home: LandingPage(),
+      home: LandingPage(
+        authService: FakeAuthenticationService(),
+      ),
     );
   }
 }

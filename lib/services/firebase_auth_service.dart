@@ -12,6 +12,7 @@ class FirebaseAuthService implements AuthBase {
       return _userFromFirebase(user);
     } catch (e) {
       print("HATA CURRENT USER" + e.toString());
+      return null;
     }
   }
 

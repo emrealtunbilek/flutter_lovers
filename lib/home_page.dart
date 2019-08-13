@@ -1,11 +1,18 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lovers/model/user_model.dart';
+import 'package:flutter_lovers/services/auth_base.dart';
 
 class HomePage extends StatelessWidget {
-  final FirebaseUser user;
   final Function onSignOut;
+  final AuthBase authService;
+  final User user;
 
-  HomePage({Key key, this.user, @required this.onSignOut}) : super(key: key);
+  HomePage(
+      {Key key,
+      @required this.authService,
+      @required this.user,
+      @required this.onSignOut})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +30,14 @@ class HomePage extends StatelessWidget {
         title: Text("Ana Sayfa"),
       ),
       body: Center(
-        child: Text("Hoşgeldiniz ${user.uid}"),
+        child: Text("Hoşgeldiniz ${user.userID}"),
       ),
     );
   }
 
-  Future<void> _cikisYap() async {
-    await FirebaseAuth.instance.signOut();
+  Future<bool> _cikisYap() async {
+    bool sonuc = await authService.signOut();
     onSignOut();
+    return sonuc;
   }
 }
