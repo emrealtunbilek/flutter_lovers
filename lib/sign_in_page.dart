@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
-import 'package:flutter_lovers/locator.dart';
 import 'package:flutter_lovers/model/user_model.dart';
-import 'package:flutter_lovers/services/auth_base.dart';
-import 'package:flutter_lovers/services/fake_auth_service.dart';
-import 'package:flutter_lovers/services/firebase_auth_service.dart';
+import 'package:flutter_lovers/viewmodel/user_model.dart';
+import 'package:provider/provider.dart';
 
 class SignInPage extends StatelessWidget {
-  final Function(User) onSingIn;
-  AuthBase authService = locator<FirebaseAuthService>();
-
-  SignInPage({Key key, @required this.onSingIn}) : super(key: key);
-
-  void _misafirGirisi() async {
-    User _user = await authService.singInAnonymously();
-    onSingIn(_user);
+  void _misafirGirisi(BuildContext context) async {
+    final _userModel = Provider.of<UserModel>(context);
+    User _user = await _userModel.singInAnonymously();
     print("Oturum açan user id:" + _user.userID.toString());
   }
 
@@ -64,7 +57,7 @@ class SignInPage extends StatelessWidget {
               butonText: "Email ve Şifre ile Giriş yap",
             ),
             SocialLoginButton(
-              onPressed: _misafirGirisi,
+              onPressed: () => _misafirGirisi(context),
               butonColor: Colors.teal,
               butonIcon: Icon(Icons.supervised_user_circle),
               butonText: "Misafir Girişi",

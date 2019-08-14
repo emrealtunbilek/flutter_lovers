@@ -11,11 +11,17 @@ class UserModel with ChangeNotifier implements AuthBase {
   UserRepository _userRepository = locator<UserRepository>();
   User _user;
 
+  User get user => _user;
+
   ViewState get state => _state;
 
   set state(ViewState value) {
     _state = value;
     notifyListeners();
+  }
+
+  UserModel() {
+    currentUser();
   }
 
   @override
@@ -36,7 +42,9 @@ class UserModel with ChangeNotifier implements AuthBase {
   Future<bool> signOut() async {
     try {
       state = ViewState.Busy;
-      return await _userRepository.signOut();
+      bool sonuc = await _userRepository.signOut();
+      _user = null;
+      return sonuc;
     } catch (e) {
       debugPrint("Viewmodeldeki current user hata:" + e.toString());
       return false;
