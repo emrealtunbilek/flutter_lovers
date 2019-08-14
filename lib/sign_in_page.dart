@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
+import 'package:flutter_lovers/locator.dart';
 import 'package:flutter_lovers/model/user_model.dart';
 import 'package:flutter_lovers/services/auth_base.dart';
+import 'package:flutter_lovers/services/fake_auth_service.dart';
+import 'package:flutter_lovers/services/firebase_auth_service.dart';
 
 class SignInPage extends StatelessWidget {
   final Function(User) onSingIn;
-  final AuthBase authService;
+  AuthBase authService = locator<FirebaseAuthService>();
 
-  const SignInPage(
-      {Key key, @required this.authService, @required this.onSingIn})
-      : super(key: key);
+  SignInPage({Key key, @required this.onSingIn}) : super(key: key);
 
   void _misafirGirisi() async {
     User _user = await authService.singInAnonymously();

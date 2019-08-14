@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/landing_page.dart';
+import 'package:flutter_lovers/locator.dart';
 import 'package:flutter_lovers/services/fake_auth_service.dart';
+import 'package:flutter_lovers/services/firebase_auth_service.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  setupLocator();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -13,9 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
       ),
-      home: LandingPage(
-        authService: FakeAuthenticationService(),
-      ),
+      home: LandingPage(),
     );
   }
 }
