@@ -24,4 +24,9 @@ class FakeAuthenticationService implements AuthBase {
   Future<User> signInWithGoogle() {
     return null;
   }
+
+  @override
+  Future<User> signInWithFacebook() {
+    return null;
+  }
 }

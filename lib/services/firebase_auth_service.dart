@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_lovers/model/user_model.dart';
 import 'package:flutter_lovers/services/auth_base.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -27,6 +28,10 @@ class FirebaseAuthService implements AuthBase {
     try {
       final _googleSignIn = GoogleSignIn();
       await _googleSignIn.signOut();
+
+      final _facebookLogin = FacebookLogin();
+      await _facebookLogin.logOut();
+
       await _firebaseAuth.signOut();
       return true;
     } catch (e) {
@@ -66,5 +71,37 @@ class FirebaseAuthService implements AuthBase {
     } else {
       return null;
     }
+  }
+
+  @override
+  Future<User> signInWithFacebook() async {
+    final _facebookLogin = FacebookLogin();
+
+    FacebookLoginResult _faceResult = await _facebookLogin
+        .logInWithReadPermissions(['public_profile', 'email']);
+
+    switch (_faceResult.status) {
+      case FacebookLoginStatus.loggedIn:
+        if (_faceResult.accessToken != null) {
+          AuthResult _firebaseResult = await _firebaseAuth.signInWithCredential(
+              FacebookAuthProvider.getCredential(
+                  accessToken: _faceResult.accessToken.token));
+
+          FirebaseUser _user = _firebaseResult.user;
+          return _userFromFirebase(_user);
+        }
+
+        break;
+
+      case FacebookLoginStatus.cancelledByUser:
+        print("kullanıcı facebook girişi iptal etti");
+        break;
+
+      case FacebookLoginStatus.error:
+        print("Hata cıktı :" + _faceResult.errorMessage);
+        break;
+    }
+
+    return null;
   }
 }
