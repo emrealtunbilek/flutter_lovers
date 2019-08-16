@@ -19,4 +19,9 @@ class FakeAuthenticationService implements AuthBase {
     return await Future.delayed(
         Duration(seconds: 2), () => User(userID: userID));
   }
+
+  @override
+  Future<User> signInWithGoogle() {
+    return null;
+  }
 }
