@@ -94,4 +94,16 @@ class UserModel with ChangeNotifier implements AuthBase {
       state = ViewState.Idle;
     }
   }
+
+  @override
+  Future<User> createUserWithEmailandPassword(String email, String sifre) {
+    // TODO: implement createUserWithEmailandPassword
+    return null;
+  }
+
+  @override
+  Future<User> signInWithEmailandPassword(String email, String sifre) {
+    // TODO: implement signInWithEmailandPassword
+    return null;
+  }
 }
