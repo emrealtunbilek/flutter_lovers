@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lovers/app/sign_in/email_sifre_giris_ve_kayit.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
 import 'package:flutter_lovers/model/user_model.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
@@ -21,6 +23,15 @@ class SignInPage extends StatelessWidget {
     final _userModel = Provider.of<UserModel>(context);
     User _user = await _userModel.signInWithFacebook();
     if (_user != null) print("Oturum açan user id:" + _user.userID.toString());
+  }
+
+  void _emailVeSifreGiris(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => EmailveSifreLoginPage(),
+      ),
+    );
   }
 
   @override
@@ -60,7 +71,7 @@ class SignInPage extends StatelessWidget {
               butonColor: Color(0xFF334D92),
             ),
             SocialLoginButton(
-              onPressed: () {},
+              onPressed: () => _emailVeSifreGiris(context),
               butonIcon: Icon(
                 Icons.email,
                 color: Colors.white,
