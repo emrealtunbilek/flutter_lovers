@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lovers/app/home_page.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
 import 'package:flutter_lovers/model/user_model.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
@@ -49,65 +50,78 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
     _linkText = _formType == FormType.LogIn
         ? "Hesabınız Yok Mu? Kayıt Olun"
         : "Hesabınız Var Mı? Giriş Yapın";
+    final _userModel = Provider.of<UserModel>(context);
+
+    if (_userModel.user != null) {
+      Future.delayed(Duration(milliseconds: 10), () {
+        Navigator.of(context).pop();
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text("Giriş / Kayıt"),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.mail),
-                      hintText: 'Email',
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
-                    ),
-                    onSaved: (String girilenEmail) {
-                      _email = girilenEmail;
-                    },
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  TextFormField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.mail),
-                      hintText: 'Sifre',
-                      labelText: 'Sifre',
-                      border: OutlineInputBorder(),
-                    ),
-                    onSaved: (String girilenSifre) {
-                      _sifre = girilenSifre;
-                    },
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  SocialLoginButton(
-                    butonText: _butonText,
-                    butonColor: Theme.of(context).primaryColor,
-                    radius: 10,
-                    onPressed: () => _formSubmit(),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  FlatButton(
-                    onPressed: () => _degistir(),
-                    child: Text(_linkText),
-                  ),
-                ],
-              )),
-        ),
-      ),
+      body: _userModel.state == ViewState.Idle
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        TextFormField(
+                          initialValue: "emre@emre.com",
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.mail),
+                            hintText: 'Email',
+                            labelText: 'Email',
+                            border: OutlineInputBorder(),
+                          ),
+                          onSaved: (String girilenEmail) {
+                            _email = girilenEmail;
+                          },
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        TextFormField(
+                          initialValue: "password",
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.lock),
+                            hintText: 'Sifre',
+                            labelText: 'Sifre',
+                            border: OutlineInputBorder(),
+                          ),
+                          onSaved: (String girilenSifre) {
+                            _sifre = girilenSifre;
+                          },
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        SocialLoginButton(
+                          butonText: _butonText,
+                          butonColor: Theme.of(context).primaryColor,
+                          radius: 10,
+                          onPressed: () => _formSubmit(),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        FlatButton(
+                          onPressed: () => _degistir(),
+                          child: Text(_linkText),
+                        ),
+                      ],
+                    )),
+              ),
+            )
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 }
