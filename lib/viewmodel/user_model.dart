@@ -10,6 +10,8 @@ class UserModel with ChangeNotifier implements AuthBase {
   ViewState _state = ViewState.Idle;
   UserRepository _userRepository = locator<UserRepository>();
   User _user;
+  String emailHataMesaji;
+  String sifreHataMesaji;
 
   User get user => _user;
 
@@ -99,10 +101,13 @@ class UserModel with ChangeNotifier implements AuthBase {
   Future<User> createUserWithEmailandPassword(
       String email, String sifre) async {
     try {
-      state = ViewState.Busy;
-      _user =
-          await _userRepository.createUserWithEmailandPassword(email, sifre);
-      return _user;
+      if (_emailSifreKontrol(email, sifre)) {
+        state = ViewState.Busy;
+        _user =
+            await _userRepository.createUserWithEmailandPassword(email, sifre);
+        return _user;
+      } else
+        return null;
     } catch (e) {
       debugPrint("Viewmodeldeki current user hata:" + e.toString());
       return null;
@@ -114,14 +119,33 @@ class UserModel with ChangeNotifier implements AuthBase {
   @override
   Future<User> signInWithEmailandPassword(String email, String sifre) async {
     try {
-      state = ViewState.Busy;
-      _user = await _userRepository.signInWithEmailandPassword(email, sifre);
-      return _user;
+      if (_emailSifreKontrol(email, sifre)) {
+        state = ViewState.Busy;
+        _user = await _userRepository.signInWithEmailandPassword(email, sifre);
+        return _user;
+      } else
+        return null;
     } catch (e) {
       debugPrint("Viewmodeldeki current user hata:" + e.toString());
       return null;
     } finally {
       state = ViewState.Idle;
     }
+  }
+
+  bool _emailSifreKontrol(String email, String sifre) {
+    var sonuc = true;
+
+    if (sifre.length < 6) {
+      sifreHataMesaji = "En az 6 karakter olmalı";
+      sonuc = false;
+    } else
+      sifreHataMesaji = null;
+    if (!email.contains('@')) {
+      emailHataMesaji = "Geçersiz email adresi";
+      sonuc = false;
+    } else
+      emailHataMesaji = null;
+    return sonuc;
   }
 }

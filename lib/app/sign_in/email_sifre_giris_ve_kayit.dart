@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lovers/app/home_page.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
 import 'package:flutter_lovers/model/user_model.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
@@ -74,6 +73,9 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
                           initialValue: "emre@emre.com",
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
+                            errorText: _userModel.emailHataMesaji != null
+                                ? _userModel.emailHataMesaji
+                                : null,
                             prefixIcon: Icon(Icons.mail),
                             hintText: 'Email',
                             labelText: 'Email',
@@ -90,6 +92,9 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
                           initialValue: "password",
                           obscureText: true,
                           decoration: InputDecoration(
+                            errorText: _userModel.sifreHataMesaji != null
+                                ? _userModel.sifreHataMesaji
+                                : null,
                             prefixIcon: Icon(Icons.lock),
                             hintText: 'Sifre',
                             labelText: 'Sifre',
