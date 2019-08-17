@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
+import 'package:flutter_lovers/model/user_model.dart';
+import 'package:flutter_lovers/viewmodel/user_model.dart';
+import 'package:provider/provider.dart';
+
+enum FormType { Register, LogIn }
 
 class EmailveSifreLoginPage extends StatefulWidget {
   @override
@@ -8,15 +13,43 @@ class EmailveSifreLoginPage extends StatefulWidget {
 
 class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
   String _email, _sifre;
+  String _butonText, _linkText;
+  var _formType = FormType.LogIn;
+
   final _formKey = GlobalKey<FormState>();
 
-  _formSubmit(BuildContext context) {
+  void _formSubmit() async {
     _formKey.currentState.save();
     debugPrint("email :" + _email + " şifre:" + _sifre);
+    final _userModel = Provider.of<UserModel>(context);
+
+    if (_formType == FormType.LogIn) {
+      User _girisYapanUser =
+          await _userModel.signInWithEmailandPassword(_email, _sifre);
+      if (_girisYapanUser != null)
+        print("Oturum açan user id:" + _girisYapanUser.userID.toString());
+    } else {
+      User _olusturulanUser =
+          await _userModel.createUserWithEmailandPassword(_email, _sifre);
+      if (_olusturulanUser != null)
+        print("Oturum açan user id:" + _olusturulanUser.userID.toString());
+    }
+  }
+
+  void _degistir() {
+    setState(() {
+      _formType =
+          _formType == FormType.LogIn ? FormType.Register : FormType.LogIn;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    _butonText = _formType == FormType.LogIn ? "Giriş Yap " : "Kayıt Ol";
+    _linkText = _formType == FormType.LogIn
+        ? "Hesabınız Yok Mu? Kayıt Olun"
+        : "Hesabınız Var Mı? Giriş Yapın";
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Giriş / Kayıt"),
@@ -59,10 +92,17 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
                     height: 8,
                   ),
                   SocialLoginButton(
-                    butonText: "Giriş Yap",
+                    butonText: _butonText,
                     butonColor: Theme.of(context).primaryColor,
                     radius: 10,
-                    onPressed: () => _formSubmit(context),
+                    onPressed: () => _formSubmit(),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  FlatButton(
+                    onPressed: () => _degistir(),
+                    child: Text(_linkText),
                   ),
                 ],
               )),

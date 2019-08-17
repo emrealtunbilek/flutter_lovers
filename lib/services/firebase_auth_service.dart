@@ -106,14 +106,27 @@ class FirebaseAuthService implements AuthBase {
   }
 
   @override
-  Future<User> createUserWithEmailandPassword(String email, String sifre) {
-    // TODO: implement createUserWithEmailandPassword
-    return null;
+  Future<User> createUserWithEmailandPassword(
+      String email, String sifre) async {
+    try {
+      AuthResult sonuc = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: sifre);
+      return _userFromFirebase(sonuc.user);
+    } catch (e) {
+      print("anonim giris hata:" + e.toString());
+      return null;
+    }
   }
 
   @override
-  Future<User> signInWithEmailandPassword(String email, String sifre) {
-    // TODO: implement signInWithEmailandPassword
-    return null;
+  Future<User> signInWithEmailandPassword(String email, String sifre) async {
+    try {
+      AuthResult sonuc = await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: sifre);
+      return _userFromFirebase(sonuc.user);
+    } catch (e) {
+      print("anonim giris hata:" + e.toString());
+      return null;
+    }
   }
 }
