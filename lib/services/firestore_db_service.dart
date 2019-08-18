@@ -7,10 +7,22 @@ class FirestoreDBService implements DBBase {
 
   @override
   Future<bool> saveUser(User user) async {
+    Map _eklenecekUserMap = user.toMap();
+    _eklenecekUserMap['createdAt'] = FieldValue.serverTimestamp();
+    _eklenecekUserMap['updatedAt'] = FieldValue.serverTimestamp();
+
     await _firebaseAuth
         .collection("users")
         .document(user.userID)
-        .setData(user.toMap());
+        .setData(_eklenecekUserMap);
+    
+    DocumentSnapshot _okunanUser = await Firestore.instance.document("users/${user.userID}").get();
+
+    _okunanUser.data
+    
+    
+    
+    
     return true;
   }
 }
