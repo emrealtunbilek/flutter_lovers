@@ -47,7 +47,12 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return await _fakeAuthenticationService.signInWithGoogle();
     } else {
-      return await _firebaseAuthService.signInWithGoogle();
+      User _user = await _firebaseAuthService.signInWithGoogle();
+      bool _sonuc = await _firestoreDBService.saveUser(_user);
+      if (_sonuc) {
+        return _user;
+      } else
+        return null;
     }
   }
 
@@ -56,7 +61,12 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return await _fakeAuthenticationService.signInWithFacebook();
     } else {
-      return await _firebaseAuthService.signInWithFacebook();
+      User _user = await _firebaseAuthService.signInWithFacebook();
+      bool _sonuc = await _firestoreDBService.saveUser(_user);
+      if (_sonuc) {
+        return _user;
+      } else
+        return null;
     }
   }
 

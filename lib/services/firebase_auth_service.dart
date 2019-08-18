@@ -82,13 +82,17 @@ class FirebaseAuthService implements AuthBase {
 
     switch (_faceResult.status) {
       case FacebookLoginStatus.loggedIn:
-        if (_faceResult.accessToken != null) {
+        if (_faceResult.accessToken != null &&
+            _faceResult.accessToken.isValid()) {
           AuthResult _firebaseResult = await _firebaseAuth.signInWithCredential(
               FacebookAuthProvider.getCredential(
                   accessToken: _faceResult.accessToken.token));
 
           FirebaseUser _user = _firebaseResult.user;
           return _userFromFirebase(_user);
+        } else {
+          print("access token valid :" +
+              _faceResult.accessToken.isValid().toString());
         }
 
         break;
