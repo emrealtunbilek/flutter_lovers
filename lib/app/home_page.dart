@@ -1,37 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lovers/app/kullanicilar.dart';
+import 'package:flutter_lovers/app/my_custom_bottom_navi.dart';
+import 'package:flutter_lovers/app/profil.dart';
+import 'package:flutter_lovers/app/tab_items.dart';
 import 'package:flutter_lovers/model/user_model.dart';
-import 'package:flutter_lovers/viewmodel/user_model.dart';
-import 'package:provider/provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   final User user;
 
   HomePage({Key key, @required this.user}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          FlatButton(
-            onPressed: () => _cikisYap(context),
-            child: Text(
-              "Çıkış Yap",
-              style: TextStyle(color: Colors.white),
-            ),
-          )
-        ],
-        title: Text("Ana Sayfa"),
-      ),
-      body: Center(
-        child: Text("Hoşgeldiniz ${user.userID}"),
-      ),
-    );
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  TabItem _currentTab = TabItem.Kullanicilar;
+
+  Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {
+    TabItem.Kullanicilar: GlobalKey<NavigatorState>(),
+    TabItem.Profil: GlobalKey<NavigatorState>(),
+  };
+
+  Map<TabItem, Widget> tumSayfalar() {
+    return {
+      TabItem.Kullanicilar: KullanicilarPage(),
+      TabItem.Profil: ProfilPage(),
+    };
   }
 
-  Future<bool> _cikisYap(BuildContext context) async {
-    final _userModel = Provider.of<UserModel>(context);
-    bool sonuc = await _userModel.signOut();
-    return sonuc;
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async =>
+          !await navigatorKeys[_currentTab].currentState.maybePop(),
+      child: MyCustomBottomNavigation(
+        sayfaOlusturucu: tumSayfalar(),
+        navigatorKeys: navigatorKeys,
+        currentTab: _currentTab,
+        onSelectedTab: (secilenTab) {
+          if (secilenTab == _currentTab) {
+            navigatorKeys[secilenTab]
+                .currentState
+                .popUntil((route) => route.isFirst);
+          } else {
+            setState(() {
+              _currentTab = secilenTab;
+            });
+          }
+        },
+      ),
+    );
   }
 }
