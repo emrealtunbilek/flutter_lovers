@@ -7,11 +7,11 @@ import 'package:flutter_lovers/viewmodel/user_model.dart';
 import 'package:provider/provider.dart';
 
 class SignInPage extends StatelessWidget {
-  void _misafirGirisi(BuildContext context) async {
+  /*void _misafirGirisi(BuildContext context) async {
     final _userModel = Provider.of<UserModel>(context);
     User _user = await _userModel.singInAnonymously();
     print("Oturum açan user id:" + _user.userID.toString());
-  }
+  }*/
 
   void _googleIleGiris(BuildContext context) async {
     final _userModel = Provider.of<UserModel>(context);
@@ -79,12 +79,12 @@ class SignInPage extends StatelessWidget {
               ),
               butonText: "Email ve Şifre ile Giriş yap",
             ),
-            SocialLoginButton(
+            /*SocialLoginButton(
               onPressed: () => _misafirGirisi(context),
               butonColor: Colors.teal,
               butonIcon: Icon(Icons.supervised_user_circle),
               butonText: "Misafir Girişi",
-            ),
+            ),*/
           ],
         ),
       ),

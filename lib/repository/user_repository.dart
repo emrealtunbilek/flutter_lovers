@@ -50,7 +50,7 @@ class UserRepository implements AuthBase {
       User _user = await _firebaseAuthService.signInWithGoogle();
       bool _sonuc = await _firestoreDBService.saveUser(_user);
       if (_sonuc) {
-        return _user;
+        return await _firestoreDBService.readUser(_user.userID);
       } else
         return null;
     }
@@ -64,7 +64,7 @@ class UserRepository implements AuthBase {
       User _user = await _firebaseAuthService.signInWithFacebook();
       bool _sonuc = await _firestoreDBService.saveUser(_user);
       if (_sonuc) {
-        return _user;
+        return await _firestoreDBService.readUser(_user.userID);
       } else
         return null;
     }
