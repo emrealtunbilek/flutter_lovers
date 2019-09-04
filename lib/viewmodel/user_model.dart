@@ -100,20 +100,18 @@ class UserModel with ChangeNotifier implements AuthBase {
   @override
   Future<User> createUserWithEmailandPassword(
       String email, String sifre) async {
-    try {
-      if (_emailSifreKontrol(email, sifre)) {
+    if (_emailSifreKontrol(email, sifre)) {
+      try {
         state = ViewState.Busy;
         _user =
             await _userRepository.createUserWithEmailandPassword(email, sifre);
+
         return _user;
-      } else
-        return null;
-    } catch (e) {
-      debugPrint("Viewmodeldeki current user hata:" + e.toString());
+      } finally {
+        state = ViewState.Idle;
+      }
+    } else
       return null;
-    } finally {
-      state = ViewState.Idle;
-    }
   }
 
   @override
@@ -126,7 +124,8 @@ class UserModel with ChangeNotifier implements AuthBase {
       } else
         return null;
     } catch (e) {
-      debugPrint("Viewmodeldeki current user hata:" + e.toString());
+      debugPrint(
+          "Viewmodeldeki signinwithemailandpassword hata:" + e.toString());
       return null;
     } finally {
       state = ViewState.Idle;

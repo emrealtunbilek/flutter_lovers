@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
 import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
@@ -24,15 +25,24 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
     final _userModel = Provider.of<UserModel>(context);
 
     if (_formType == FormType.LogIn) {
-      User _girisYapanUser =
-          await _userModel.signInWithEmailandPassword(_email, _sifre);
-      if (_girisYapanUser != null)
-        print("Oturum açan user id:" + _girisYapanUser.userID.toString());
+      try {
+        User _girisYapanUser =
+            await _userModel.signInWithEmailandPassword(_email, _sifre);
+        if (_girisYapanUser != null)
+          print("Oturum açan user id:" + _girisYapanUser.userID.toString());
+      } catch (e) {
+        debugPrint("Widget oturum açma hata yakalandı :" + e.toString());
+      }
     } else {
-      User _olusturulanUser =
-          await _userModel.createUserWithEmailandPassword(_email, _sifre);
-      if (_olusturulanUser != null)
-        print("Oturum açan user id:" + _olusturulanUser.userID.toString());
+      try {
+        User _olusturulanUser =
+            await _userModel.createUserWithEmailandPassword(_email, _sifre);
+        if (_olusturulanUser != null)
+          print("Oturum açan user id:" + _olusturulanUser.userID.toString());
+      } on PlatformException catch (e) {
+        debugPrint(
+            "Widget kullanıcı olusturma hata yakalandı :" + e.code.toString());
+      }
     }
   }
 
