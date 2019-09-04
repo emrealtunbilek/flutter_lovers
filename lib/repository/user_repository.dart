@@ -1,5 +1,5 @@
 import 'package:flutter_lovers/locator.dart';
-import 'package:flutter_lovers/model/user_model.dart';
+import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/services/auth_base.dart';
 import 'package:flutter_lovers/services/fake_auth_service.dart';
 import 'package:flutter_lovers/services/firebase_auth_service.dart';
@@ -81,7 +81,7 @@ class UserRepository implements AuthBase {
           email, sifre);
       bool _sonuc = await _firestoreDBService.saveUser(_user);
       if (_sonuc) {
-        return _user;
+        return await _firestoreDBService.readUser(_user.userID);
       } else
         return null;
     }
@@ -93,8 +93,10 @@ class UserRepository implements AuthBase {
       return await _fakeAuthenticationService.signInWithEmailandPassword(
           email, sifre);
     } else {
-      return await _firebaseAuthService.signInWithEmailandPassword(
-          email, sifre);
+      User _user =
+          await _firebaseAuthService.signInWithEmailandPassword(email, sifre);
+
+      return await _firestoreDBService.readUser(_user.userID);
     }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:flutter_lovers/model/user_model.dart';
+import 'package:flutter_lovers/model/user.dart';
 
 abstract class AuthBase {
   Future<User> currentUser();

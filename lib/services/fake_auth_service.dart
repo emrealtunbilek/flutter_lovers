@@ -1,4 +1,4 @@
-import 'package:flutter_lovers/model/user_model.dart';
+import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/services/auth_base.dart';
 
 class FakeAuthenticationService implements AuthBase {

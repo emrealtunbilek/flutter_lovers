@@ -3,7 +3,7 @@ import 'package:flutter_lovers/app/kullanicilar.dart';
 import 'package:flutter_lovers/app/my_custom_bottom_navi.dart';
 import 'package:flutter_lovers/app/profil.dart';
 import 'package:flutter_lovers/app/tab_items.dart';
-import 'package:flutter_lovers/model/user_model.dart';
+import 'package:flutter_lovers/model/user.dart';
 
 class HomePage extends StatefulWidget {
   final User user;

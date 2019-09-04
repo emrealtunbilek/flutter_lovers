@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/locator.dart';
-import 'package:flutter_lovers/model/user_model.dart';
+import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/repository/user_repository.dart';
 import 'package:flutter_lovers/services/auth_base.dart';
 
