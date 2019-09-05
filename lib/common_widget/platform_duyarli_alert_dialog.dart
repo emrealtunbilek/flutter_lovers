@@ -16,6 +16,16 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
       @required this.anaButonYazisi,
       this.iptalButonYazisi});
 
+  Future<bool> goster(BuildContext context) async {
+    return Platform.isIOS
+        ? await showCupertinoDialog<bool>(
+            context: context, builder: (context) => this)
+        : await showDialog<bool>(
+            context: context,
+            builder: (context) => this,
+            barrierDismissible: false);
+  }
+
   @override
   Widget buildAndroidWidget(BuildContext context) {
     return AlertDialog(
@@ -42,7 +52,9 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
         tumButonlar.add(
           CupertinoDialogAction(
             child: Text(iptalButonYazisi),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
           ),
         );
       }
@@ -50,7 +62,9 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
       tumButonlar.add(
         CupertinoDialogAction(
           child: Text(anaButonYazisi),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
         ),
       );
     } else {
@@ -58,7 +72,9 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
         tumButonlar.add(
           FlatButton(
             child: Text(iptalButonYazisi),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
           ),
         );
       }
@@ -67,7 +83,7 @@ class PlatformDuyarliAlertDialog extends PlatformDuyarliWidget {
         FlatButton(
           child: Text("Tamam"),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.of(context).pop(true);
           },
         ),
       );

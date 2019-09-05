@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_lovers/app/hata_exception.dart';
+import 'package:flutter_lovers/common_widget/platform_duyarli_alert_dialog.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
 import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
@@ -41,25 +42,11 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
         if (_olusturulanUser != null)
           print("Oturum açan user id:" + _olusturulanUser.userID.toString());
       } on PlatformException catch (e) {
-        debugPrint("Widget kullanıcı olusturma hata yakalandı :" +
-            Hatalar.goster(e.code));
-
-        showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: Text("Kullanıcı Oluşturma Hata"),
-                content: Text(Hatalar.goster(e.code)),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text("Tamam"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              );
-            });
+        PlatformDuyarliAlertDialog(
+          baslik: "Kullanıcı Oluşturma HATA",
+          icerik: Hatalar.goster(e.code),
+          anaButonYazisi: 'Tamam',
+        ).goster(context);
       }
     }
   }
