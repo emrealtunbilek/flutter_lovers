@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_lovers/app/hata_exception.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
 import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
@@ -30,8 +31,8 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
             await _userModel.signInWithEmailandPassword(_email, _sifre);
         if (_girisYapanUser != null)
           print("Oturum açan user id:" + _girisYapanUser.userID.toString());
-      } catch (e) {
-        debugPrint("Widget oturum açma hata yakalandı :" + e.toString());
+      } on PlatformException catch (e) {
+        debugPrint("Widget oturum açma hata yakalandı :" + e.code.toString());
       }
     } else {
       try {
@@ -40,8 +41,25 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
         if (_olusturulanUser != null)
           print("Oturum açan user id:" + _olusturulanUser.userID.toString());
       } on PlatformException catch (e) {
-        debugPrint(
-            "Widget kullanıcı olusturma hata yakalandı :" + e.code.toString());
+        debugPrint("Widget kullanıcı olusturma hata yakalandı :" +
+            Hatalar.goster(e.code));
+
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text("Kullanıcı Oluşturma Hata"),
+                content: Text(Hatalar.goster(e.code)),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text("Tamam"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+            });
       }
     }
   }
