@@ -113,10 +113,26 @@ class _ProfilPageState extends State<ProfilPage> {
     }
   }
 
-  void _userNameGuncelle(BuildContext context) {
+  void _userNameGuncelle(BuildContext context) async {
     final _userModel = Provider.of<UserModel>(context);
     if (_userModel.user.userName != _controllerUserName.text) {
-      // _userModel.updateUserName(_controllerUserName.text);
+      var updateResult = await _userModel.updateUserName(
+          _userModel.user.userID, _controllerUserName.text);
+
+      if (updateResult == true) {
+        PlatformDuyarliAlertDialog(
+          baslik: "Başarılı",
+          icerik: "Username değiştirildi",
+          anaButonYazisi: 'Tamam',
+        ).goster(context);
+      } else {
+        _controllerUserName.text = _userModel.user.userName;
+        PlatformDuyarliAlertDialog(
+          baslik: "Hata",
+          icerik: "Username zaten kullanımda, farklı bir username deneyiniz",
+          anaButonYazisi: 'Tamam',
+        ).goster(context);
+      }
     } else {
       PlatformDuyarliAlertDialog(
         baslik: "Hata",
