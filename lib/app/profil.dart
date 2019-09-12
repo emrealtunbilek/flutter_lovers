@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/common_widget/platform_duyarli_alert_dialog.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProfilPage extends StatefulWidget {
@@ -11,6 +14,7 @@ class ProfilPage extends StatefulWidget {
 
 class _ProfilPageState extends State<ProfilPage> {
   TextEditingController _controllerUserName;
+  File _profilFoto;
 
   @override
   void initState() {
@@ -23,6 +27,24 @@ class _ProfilPageState extends State<ProfilPage> {
   void dispose() {
     _controllerUserName.dispose();
     super.dispose();
+  }
+
+  void _kameradanFotoCek() async {
+    var _yeniResim = await ImagePicker.pickImage(source: ImageSource.camera);
+    Navigator.of(context).pop();
+    setState(() {
+      _profilFoto = _yeniResim;
+      Navigator.of(context).pop();
+    });
+  }
+
+  void _galeridenResimSec() async {
+    var _yeniResim = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _profilFoto = _yeniResim;
+      Navigator.of(context).pop();
+    });
   }
 
   @override
@@ -49,10 +71,41 @@ class _ProfilPageState extends State<ProfilPage> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  radius: 75,
-                  backgroundColor: Colors.white,
-                  backgroundImage: NetworkImage(_userModel.user.profilURL),
+                child: GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            height: 160,
+                            child: Column(
+                              children: <Widget>[
+                                ListTile(
+                                  leading: Icon(Icons.camera),
+                                  title: Text("Kameradan Çek"),
+                                  onTap: () {
+                                    _kameradanFotoCek();
+                                  },
+                                ),
+                                ListTile(
+                                  leading: Icon(Icons.image),
+                                  title: Text("Galeriden Seç"),
+                                  onTap: () {
+                                    _galeridenResimSec();
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        });
+                  },
+                  child: CircleAvatar(
+                    radius: 75,
+                    backgroundColor: Colors.white,
+                    backgroundImage: _profilFoto == null
+                        ? NetworkImage(_userModel.user.profilURL)
+                        : FileImage(_profilFoto),
+                  ),
                 ),
               ),
               Padding(
