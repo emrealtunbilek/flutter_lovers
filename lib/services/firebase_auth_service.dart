@@ -19,8 +19,11 @@ class FirebaseAuthService implements AuthBase {
   }
 
   User _userFromFirebase(FirebaseUser user) {
-    if (user == null) return null;
-    return User(userID: user.uid, email: user.email);
+    if (user == null) {
+      return null;
+    } else {
+      return User(userID: user.uid, email: user.email);
+    }
   }
 
   @override
@@ -119,13 +122,8 @@ class FirebaseAuthService implements AuthBase {
 
   @override
   Future<User> signInWithEmailandPassword(String email, String sifre) async {
-    try {
-      AuthResult sonuc = await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: sifre);
-      return _userFromFirebase(sonuc.user);
-    } catch (e) {
-      print("firebase auth servise oturum açma hata:" + e.toString());
-      return null;
-    }
+    AuthResult sonuc = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: sifre);
+    return _userFromFirebase(sonuc.user);
   }
 }

@@ -33,7 +33,11 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
         if (_girisYapanUser != null)
           print("Oturum açan user id:" + _girisYapanUser.userID.toString());
       } on PlatformException catch (e) {
-        debugPrint("Widget oturum açma hata yakalandı :" + e.code.toString());
+        PlatformDuyarliAlertDialog(
+          baslik: "Oturum Açma HATA",
+          icerik: Hatalar.goster(e.code),
+          anaButonYazisi: 'Tamam',
+        ).goster(context);
       }
     } else {
       try {

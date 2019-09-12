@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_lovers/locator.dart';
 import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/services/auth_base.dart';
@@ -21,7 +20,8 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return await _fakeAuthenticationService.currentUser();
     } else {
-      return await _firebaseAuthService.currentUser();
+      User _user = await _firebaseAuthService.currentUser();
+      return await _firestoreDBService.readUser(_user.userID);
     }
   }
 
@@ -94,14 +94,10 @@ class UserRepository implements AuthBase {
       return await _fakeAuthenticationService.signInWithEmailandPassword(
           email, sifre);
     } else {
-      try {
-        User _user =
-            await _firebaseAuthService.signInWithEmailandPassword(email, sifre);
+      User _user =
+          await _firebaseAuthService.signInWithEmailandPassword(email, sifre);
 
-        return await _firestoreDBService.readUser(_user.userID);
-      } catch (e) {
-        debugPrint("repoda signinuser kısmında hata var:" + e.toString());
-      }
+      return await _firestoreDBService.readUser(_user.userID);
     }
   }
 }

@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 class ProfilPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    UserModel _userModel = Provider.of<UserModel>(context);
+    print("Profil sayfasındaki user degerleri :" + _userModel.user.toString());
     return Scaffold(
       appBar: AppBar(
         title: Text("Profil"),
