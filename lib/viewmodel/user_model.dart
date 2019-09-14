@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/locator.dart';
 import 'package:flutter_lovers/model/user.dart';
@@ -150,5 +152,12 @@ class UserModel with ChangeNotifier implements AuthBase {
       _user.userName = yeniUserName;
     }
     return sonuc;
+  }
+
+  Future<String> uploadFile(
+      String userID, String fileType, File profilFoto) async {
+    var indirmeLinki =
+        await _userRepository.uploadFile(userID, fileType, profilFoto);
+    return indirmeLinki;
   }
 }
