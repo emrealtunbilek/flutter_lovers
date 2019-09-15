@@ -74,4 +74,15 @@ class FirestoreDBService implements DBBase {
 
     return tumKullanicilar;
   }
+
+  @override
+  Stream getMessages(String currentUserID, String sohbetEdilenUserID) {
+    var snapShot = _firebaseDB
+        .collection("konusmalar")
+        .document(currentUserID + "--" + sohbetEdilenUserID)
+        .collection("mesajlar")
+        .orderBy("date")
+        .snapshots();
+    return snapShot;
+  }
 }

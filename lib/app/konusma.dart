@@ -12,6 +12,8 @@ class Konusma extends StatefulWidget {
 }
 
 class _KonusmaState extends State<Konusma> {
+  var _mesajController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,8 +23,53 @@ class _KonusmaState extends State<Konusma> {
       body: Center(
         child: Column(
           children: <Widget>[
-            Text("Current user:" + widget.currentUser.userName),
-            Text("Sohbet edilen user:" + widget.sohbetEdilenUser.userName),
+            Expanded(
+              child: ListView(
+                children: <Widget>[
+                  Text("Konusmanın Kendisi"),
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(bottom: 8, left: 8),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: _mesajController,
+                      cursorColor: Colors.blueGrey,
+                      style: new TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.black,
+                      ),
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: "Mesajınızı Yazın",
+                        border: new OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(30.0),
+                            borderSide: BorderSide.none),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 4,
+                    ),
+                    child: FloatingActionButton(
+                      elevation: 0,
+                      backgroundColor: Colors.blue,
+                      child: Icon(
+                        Icons.navigation,
+                        size: 35,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {},
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
