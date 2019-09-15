@@ -196,6 +196,14 @@ class _ProfilPageState extends State<ProfilPage> {
       var url = await _userModel.uploadFile(
           _userModel.user.userID, "profil_foto", _profilFoto);
       print("gelen url :" + url);
+
+      if (url != null) {
+        PlatformDuyarliAlertDialog(
+          baslik: "Başarılı",
+          icerik: "Profil fotoğrafınız güncellendi",
+          anaButonYazisi: 'Tamam',
+        ).goster(context);
+      }
     }
   }
 }

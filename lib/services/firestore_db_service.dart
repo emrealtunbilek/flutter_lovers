@@ -57,4 +57,21 @@ class FirestoreDBService implements DBBase {
         .updateData({'profilURL': profilFotoURL});
     return true;
   }
+
+  @override
+  Future<List<User>> getAllUser() async {
+    QuerySnapshot querySnapshot =
+        await _firebaseDB.collection("users").getDocuments();
+
+    List<User> tumKullanicilar = [];
+    for (DocumentSnapshot tekUser in querySnapshot.documents) {
+      User _tekUser = User.fromMap(tekUser.data);
+      tumKullanicilar.add(_tekUser);
+    }
+
+    //MAP METOTU ILE
+    //tumKullanicilar = querySnapshot.documents.map((tekSatir)=>User.fromMap(tekSatir.data)).toList();
+
+    return tumKullanicilar;
+  }
 }
