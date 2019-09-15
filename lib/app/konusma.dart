@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lovers/model/mesaj.dart';
 import 'package:flutter_lovers/model/user.dart';
+import 'package:flutter_lovers/viewmodel/user_model.dart';
+import 'package:provider/provider.dart';
 
 class Konusma extends StatefulWidget {
   final User currentUser;
@@ -16,6 +19,9 @@ class _KonusmaState extends State<Konusma> {
 
   @override
   Widget build(BuildContext context) {
+    User _currentUser = widget.currentUser;
+    User _sohbetEdilenUser = widget.sohbetEdilenUser;
+    final _userModel = Provider.of<UserModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Sohbet"),
@@ -24,11 +30,23 @@ class _KonusmaState extends State<Konusma> {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: ListView(
-                children: <Widget>[
-                  Text("Konusmanın Kendisi"),
-                ],
-              ),
+              child: StreamBuilder<List<Mesaj>>(
+                  stream: _userModel.getMessages(
+                      _currentUser.userID, _sohbetEdilenUser.userID),
+                  builder: (context, streamMesajlarListesi) {
+                    if (!streamMesajlarListesi.hasData) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    List<Mesaj> tumMesajlar = streamMesajlarListesi.data;
+                    return ListView.builder(
+                      itemBuilder: (context, index) {
+                        return Text(tumMesajlar[index].mesaj);
+                      },
+                      itemCount: tumMesajlar.length,
+                    );
+                  }),
             ),
             Container(
               padding: EdgeInsets.only(bottom: 8, left: 8),
