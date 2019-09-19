@@ -16,6 +16,7 @@ class Konusma extends StatefulWidget {
 
 class _KonusmaState extends State<Konusma> {
   var _mesajController = TextEditingController();
+  ScrollController _scrollController = new ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +41,12 @@ class _KonusmaState extends State<Konusma> {
                       );
                     }
                     List<Mesaj> tumMesajlar = streamMesajlarListesi.data;
+
                     return ListView.builder(
+                      controller: _scrollController,
+                      reverse: true,
                       itemBuilder: (context, index) {
-                        return Text(tumMesajlar[index].mesaj);
+                        return _konusmaBalonuOlustur(tumMesajlar[index]);
                       },
                       itemCount: tumMesajlar.length,
                     );
@@ -95,6 +99,11 @@ class _KonusmaState extends State<Konusma> {
                               await _userModel.saveMessage(_kaydedilecekMesaj);
                           if (sonuc) {
                             _mesajController.clear();
+                            _scrollController.animateTo(
+                              0,
+                              curve: Curves.easeOut,
+                              duration: const Duration(milliseconds: 10),
+                            );
                           }
                         }
                       },
@@ -107,5 +116,60 @@ class _KonusmaState extends State<Konusma> {
         ),
       ),
     );
+  }
+
+  Widget _konusmaBalonuOlustur(Mesaj oankiMesaj) {
+    Color _gelenMesajRenk = Colors.blue;
+    Color _gidenMesajRenk = Theme.of(context).primaryColor;
+
+    var _benimMesajimMi = oankiMesaj.bendenMi;
+    if (_benimMesajimMi) {
+      return Padding(
+        padding: EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: _gidenMesajRenk,
+              ),
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.all(4),
+              child: Text(
+                oankiMesaj.mesaj,
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                CircleAvatar(
+                  backgroundImage:
+                      NetworkImage(widget.sohbetEdilenUser.profilURL),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    color: _gelenMesajRenk,
+                  ),
+                  padding: EdgeInsets.all(10),
+                  margin: EdgeInsets.all(4),
+                  child: Text(oankiMesaj.mesaj),
+                ),
+              ],
+            )
+          ],
+          crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+      );
+    }
   }
 }
