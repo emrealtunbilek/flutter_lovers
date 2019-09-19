@@ -145,4 +145,12 @@ class UserRepository implements AuthBase {
       return _firestoreDBService.getMessages(currentUserID, sohbetEdilenUserID);
     }
   }
+
+  Future<bool> saveMessage(Mesaj kaydedilecekMesaj) async {
+    if (appMode == AppMode.DEBUG) {
+      return true;
+    } else {
+      return _firestoreDBService.saveMessage(kaydedilecekMesaj);
+    }
+  }
 }

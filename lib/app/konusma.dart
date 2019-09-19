@@ -82,7 +82,22 @@ class _KonusmaState extends State<Konusma> {
                         size: 35,
                         color: Colors.white,
                       ),
-                      onPressed: () {},
+                      onPressed: () async {
+                        if (_mesajController.text.trim().length > 0) {
+                          Mesaj _kaydedilecekMesaj = Mesaj(
+                            kimden: _currentUser.userID,
+                            kime: _sohbetEdilenUser.userID,
+                            bendenMi: true,
+                            mesaj: _mesajController.text,
+                          );
+
+                          var sonuc =
+                              await _userModel.saveMessage(_kaydedilecekMesaj);
+                          if (sonuc) {
+                            _mesajController.clear();
+                          }
+                        }
+                      },
                     ),
                   ),
                 ],

@@ -8,4 +8,5 @@ abstract class DBBase {
   Future<bool> updateProfilFoto(String userID, String profilFotoURL);
   Future<List<User>> getAllUser();
   Stream<List<Mesaj>> getMessages(String currentUserID, String konusulanUserID);
+  Future<bool> saveMessage(Mesaj kaydedilecekMesaj);
 }

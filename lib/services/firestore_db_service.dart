@@ -104,4 +104,32 @@ class FirestoreDBService implements DBBase {
         .map((mesaj) => Mesaj.fromMap(mesaj.data))
         .toList());
   }
+
+  Future<bool> saveMessage(Mesaj kaydedilecekMesaj) async {
+    var _mesajID = _firebaseDB.collection("konusmalar").document().documentID;
+    var _myDocumentID =
+        kaydedilecekMesaj.kimden + "--" + kaydedilecekMesaj.kime;
+    var _receiverDocumentID =
+        kaydedilecekMesaj.kime + "--" + kaydedilecekMesaj.kimden;
+
+    var _kaydedilecekMesajMapYapisi = kaydedilecekMesaj.toMap();
+
+    await _firebaseDB
+        .collection("konusmalar")
+        .document(_myDocumentID)
+        .collection("mesajlar")
+        .document(_mesajID)
+        .setData(_kaydedilecekMesajMapYapisi);
+
+    _kaydedilecekMesajMapYapisi.update("bendenMi", (deger) => false);
+
+    await _firebaseDB
+        .collection("konusmalar")
+        .document(_receiverDocumentID)
+        .collection("mesajlar")
+        .document(_mesajID)
+        .setData(_kaydedilecekMesajMapYapisi);
+
+    return true;
+  }
 }

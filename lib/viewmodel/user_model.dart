@@ -171,4 +171,8 @@ class UserModel with ChangeNotifier implements AuthBase {
       String currentUserID, String sohbetEdilenUserID) {
     return _userRepository.getMessages(currentUserID, sohbetEdilenUserID);
   }
+
+  Future<bool> saveMessage(Mesaj kaydedilecekMesaj) {
+    return _userRepository.saveMessage(kaydedilecekMesaj);
+  }
 }

@@ -15,7 +15,7 @@ class Mesaj {
       'kime': kime,
       'bendenMi': bendenMi,
       'mesaj': mesaj,
-      'date': date,
+      'date': date ?? FieldValue.serverTimestamp(),
     };
   }
 
