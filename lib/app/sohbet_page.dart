@@ -170,6 +170,7 @@ class _SohbetPageState extends State<SohbetPage> {
             Row(
               children: <Widget>[
                 CircleAvatar(
+                  backgroundColor: Colors.grey.withAlpha(40),
                   backgroundImage:
                       NetworkImage(widget.sohbetEdilenUser.profilURL),
                 ),
