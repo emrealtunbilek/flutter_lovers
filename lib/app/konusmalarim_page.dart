@@ -33,7 +33,11 @@ class _KonusmalarimPageState extends State<KonusmalarimPage> {
                 var oankiKonusma = tumKonusmalar[index];
                 return ListTile(
                   title: Text(oankiKonusma.son_yollanan_mesaj),
-                  subtitle: Text(oankiKonusma.kimle_konusuyor),
+                  subtitle: Text(oankiKonusma.konusulanUserName),
+                  leading: CircleAvatar(
+                    backgroundImage:
+                        NetworkImage(oankiKonusma.konusulanUserProfilURL),
+                  ),
                 );
               },
               itemCount: tumKonusmalar.length,

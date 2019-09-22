@@ -21,6 +21,7 @@ class UserRepository implements AuthBase {
       locator<FirebaseStorageService>();
 
   AppMode appMode = AppMode.RELEASE;
+  List<User> tumKullaniciListesi = [];
 
   @override
   Future<User> currentUser() async {
@@ -132,7 +133,7 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return [];
     } else {
-      var tumKullaniciListesi = await _firestoreDBService.getAllUser();
+      tumKullaniciListesi = await _firestoreDBService.getAllUser();
 
       return tumKullaniciListesi;
     }
@@ -159,7 +160,41 @@ class UserRepository implements AuthBase {
     if (appMode == AppMode.DEBUG) {
       return [];
     } else {
-      return _firestoreDBService.getAllConversations(userID);
+      var konusmaListesi =
+          await _firestoreDBService.getAllConversations(userID);
+
+      for (var oankiKonusma in konusmaListesi) {
+        var userListesindekiKullanici =
+            listedeUserBul(oankiKonusma.kimle_konusuyor);
+
+        if (userListesindekiKullanici != null) {
+          print("VERILER LOCAL CACHEDEN OKUNDU");
+          oankiKonusma.konusulanUserName = userListesindekiKullanici.userName;
+          oankiKonusma.konusulanUserProfilURL =
+              userListesindekiKullanici.profilURL;
+        } else {
+          print("VERILER VERITABANINDAN OKUNDU");
+          print(
+              "aranılan user daha önceden veritabanından getirilmemiş, o yüzden veritabanından bu degeri okumalıyız");
+          var _veritabanindanOkunanUser =
+              await _firestoreDBService.readUser(oankiKonusma.kimle_konusuyor);
+          oankiKonusma.konusulanUserName = _veritabanindanOkunanUser.userName;
+          oankiKonusma.konusulanUserProfilURL =
+              _veritabanindanOkunanUser.profilURL;
+        }
+      }
+
+      return konusmaListesi;
     }
+  }
+
+  User listedeUserBul(String userID) {
+    for (int i = 0; i < tumKullaniciListesi.length; i++) {
+      if (tumKullaniciListesi[i].userID == userID) {
+        return tumKullaniciListesi[i];
+      }
+    }
+
+    return null;
   }
 }

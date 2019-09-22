@@ -7,6 +7,8 @@ class Konusma {
   final Timestamp olusturulma_tarihi;
   final String son_yollanan_mesaj;
   final Timestamp gorulme_tarihi;
+  String konusulanUserName;
+  String konusulanUserProfilURL;
 
   Konusma(
       {this.konusma_sahibi,
