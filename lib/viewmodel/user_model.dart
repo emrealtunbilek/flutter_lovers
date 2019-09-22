@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/locator.dart';
+import 'package:flutter_lovers/model/konusma.dart';
 import 'package:flutter_lovers/model/mesaj.dart';
 import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/repository/user_repository.dart';
@@ -172,7 +173,11 @@ class UserModel with ChangeNotifier implements AuthBase {
     return _userRepository.getMessages(currentUserID, sohbetEdilenUserID);
   }
 
-  Future<bool> saveMessage(Mesaj kaydedilecekMesaj) {
-    return _userRepository.saveMessage(kaydedilecekMesaj);
+  Future<bool> saveMessage(Mesaj kaydedilecekMesaj) async {
+    return await _userRepository.saveMessage(kaydedilecekMesaj);
+  }
+
+  Future<List<Konusma>> getAllConversations(String userID) async {
+    return await _userRepository.getAllConversations(userID);
   }
 }

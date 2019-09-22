@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_lovers/locator.dart';
+import 'package:flutter_lovers/model/konusma.dart';
 import 'package:flutter_lovers/model/mesaj.dart';
 import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/services/auth_base.dart';
@@ -151,6 +152,14 @@ class UserRepository implements AuthBase {
       return true;
     } else {
       return _firestoreDBService.saveMessage(kaydedilecekMesaj);
+    }
+  }
+
+  Future<List<Konusma>> getAllConversations(String userID) async {
+    if (appMode == AppMode.DEBUG) {
+      return [];
+    } else {
+      return _firestoreDBService.getAllConversations(userID);
     }
   }
 }
