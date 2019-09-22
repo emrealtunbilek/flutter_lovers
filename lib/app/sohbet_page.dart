@@ -6,17 +6,17 @@ import 'package:flutter_lovers/viewmodel/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class Konusma extends StatefulWidget {
+class SohbetPage extends StatefulWidget {
   final User currentUser;
   final User sohbetEdilenUser;
 
-  Konusma({this.currentUser, this.sohbetEdilenUser});
+  SohbetPage({this.currentUser, this.sohbetEdilenUser});
 
   @override
-  _KonusmaState createState() => _KonusmaState();
+  _SohbetPageState createState() => _SohbetPageState();
 }
 
-class _KonusmaState extends State<Konusma> {
+class _SohbetPageState extends State<SohbetPage> {
   var _mesajController = TextEditingController();
   ScrollController _scrollController = new ScrollController();
 

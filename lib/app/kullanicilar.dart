@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_lovers/app/konusma.dart';
+import 'package:flutter_lovers/app/sohbet_page.dart';
 import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
 import 'package:provider/provider.dart';
 
-class KullanicilarPage extends StatelessWidget {
+class KullanicilarPage extends StatefulWidget {
+  @override
+  _KullanicilarPageState createState() => _KullanicilarPageState();
+}
+
+class _KullanicilarPageState extends State<KullanicilarPage> {
   @override
   Widget build(BuildContext context) {
     UserModel _userModel = Provider.of<UserModel>(context);
@@ -20,34 +25,38 @@ class KullanicilarPage extends StatelessWidget {
               var tumKullanicilar = sonuc.data;
 
               if (tumKullanicilar.length - 1 > 0) {
-                return ListView.builder(
-                  itemCount: tumKullanicilar.length,
-                  itemBuilder: (context, index) {
-                    var oankiUser = sonuc.data[index];
-                    if (oankiUser.userID != _userModel.user.userID) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context, rootNavigator: true).push(
-                            MaterialPageRoute(
-                              builder: (context) => Konusma(
-                                currentUser: _userModel.user,
-                                sohbetEdilenUser: oankiUser,
+                return RefreshIndicator(
+                  onRefresh: _kullanicilarListesiniGuncelle,
+                  child: ListView.builder(
+                    itemCount: tumKullanicilar.length,
+                    itemBuilder: (context, index) {
+                      var oankiUser = sonuc.data[index];
+                      if (oankiUser.userID != _userModel.user.userID) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.of(context, rootNavigator: true).push(
+                              MaterialPageRoute(
+                                builder: (context) => SohbetPage(
+                                  currentUser: _userModel.user,
+                                  sohbetEdilenUser: oankiUser,
+                                ),
                               ),
+                            );
+                          },
+                          child: ListTile(
+                            title: Text(oankiUser.userName),
+                            subtitle: Text(oankiUser.email),
+                            leading: CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(oankiUser.profilURL),
                             ),
-                          );
-                        },
-                        child: ListTile(
-                          title: Text(oankiUser.userName),
-                          subtitle: Text(oankiUser.email),
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(oankiUser.profilURL),
                           ),
-                        ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  },
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
                 );
               } else {
                 return Center(
@@ -59,5 +68,12 @@ class KullanicilarPage extends StatelessWidget {
             }
           }),
     );
+  }
+
+  Future<Null> _kullanicilarListesiniGuncelle() async {
+    setState(() {});
+    await Future.delayed(Duration(seconds: 1));
+
+    return null;
   }
 }

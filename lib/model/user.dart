@@ -37,6 +37,8 @@ class User {
         updatedAt = (map['updatedAt'] as Timestamp).toDate(),
         seviye = map['seviye'];
 
+  User.idveResim({@required this.userID, @required this.profilURL});
+
   @override
   String toString() {
     return 'User{userID: $userID, email: $email, userName: $userName, profilURL: $profilURL, createdAt: $createdAt, updatedAt: $updatedAt, seviye: $seviye}';
