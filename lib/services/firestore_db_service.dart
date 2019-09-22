@@ -121,6 +121,14 @@ class FirestoreDBService implements DBBase {
         .document(_mesajID)
         .setData(_kaydedilecekMesajMapYapisi);
 
+    await _firebaseDB.collection("konusmalar").document(_myDocumentID).setData({
+      "konusma_sahibi": kaydedilecekMesaj.kimden,
+      "kimle_konusuyor": kaydedilecekMesaj.kime,
+      "son_yollanan_mesaj": kaydedilecekMesaj.mesaj,
+      "konusma_goruldu": false,
+      "olusturulma_tarihi": FieldValue.serverTimestamp(),
+    });
+
     _kaydedilecekMesajMapYapisi.update("bendenMi", (deger) => false);
 
     await _firebaseDB
@@ -129,6 +137,17 @@ class FirestoreDBService implements DBBase {
         .collection("mesajlar")
         .document(_mesajID)
         .setData(_kaydedilecekMesajMapYapisi);
+
+    await _firebaseDB
+        .collection("konusmalar")
+        .document(_receiverDocumentID)
+        .setData({
+      "konusma_sahibi": kaydedilecekMesaj.kime,
+      "kimle_konusuyor": kaydedilecekMesaj.kimden,
+      "son_yollanan_mesaj": kaydedilecekMesaj.mesaj,
+      "konusma_goruldu": false,
+      "olusturulma_tarihi": FieldValue.serverTimestamp(),
+    });
 
     return true;
   }

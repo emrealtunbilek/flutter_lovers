@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_lovers/app/konusmalarim_page.dart';
 import 'package:flutter_lovers/app/kullanicilar.dart';
 import 'package:flutter_lovers/app/my_custom_bottom_navi.dart';
 import 'package:flutter_lovers/app/profil.dart';
@@ -19,12 +20,14 @@ class _HomePageState extends State<HomePage> {
 
   Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {
     TabItem.Kullanicilar: GlobalKey<NavigatorState>(),
+    TabItem.Konusmalarim: GlobalKey<NavigatorState>(),
     TabItem.Profil: GlobalKey<NavigatorState>(),
   };
 
   Map<TabItem, Widget> tumSayfalar() {
     return {
       TabItem.Kullanicilar: KullanicilarPage(),
+      TabItem.Konusmalarim: KonusmalarimPage(),
       TabItem.Profil: ProfilPage(),
     };
   }
