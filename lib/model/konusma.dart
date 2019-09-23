@@ -9,6 +9,8 @@ class Konusma {
   final Timestamp gorulme_tarihi;
   String konusulanUserName;
   String konusulanUserProfilURL;
+  DateTime sonOkunmaZamani;
+  String aradakiFark;
 
   Konusma(
       {this.konusma_sahibi,

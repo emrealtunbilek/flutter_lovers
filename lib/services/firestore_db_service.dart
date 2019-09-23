@@ -89,6 +89,8 @@ class FirestoreDBService implements DBBase {
 
     for (DocumentSnapshot tekKonusma in querySnapshot.documents) {
       Konusma _tekKonusma = Konusma.fromMap(tekKonusma.data);
+      print("okunan konusma tarisi:" +
+          _tekKonusma.olusturulma_tarihi.toDate().toString());
       tumKonusmalar.add(_tekKonusma);
     }
 
@@ -169,5 +171,17 @@ class FirestoreDBService implements DBBase {
     });
 
     return true;
+  }
+
+  @override
+  Future<DateTime> saatiGoster(String userID) async {
+    await _firebaseDB.collection("server").document(userID).setData({
+      "saat": FieldValue.serverTimestamp(),
+    });
+
+    var okunanMap =
+        await _firebaseDB.collection("server").document(userID).get();
+    Timestamp okunanTarih = okunanMap.data["saat"];
+    return okunanTarih.toDate();
   }
 }

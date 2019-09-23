@@ -52,7 +52,9 @@ class _KonusmalarimPageState extends State<KonusmalarimPage> {
                       },
                       child: ListTile(
                         title: Text(oankiKonusma.son_yollanan_mesaj),
-                        subtitle: Text(oankiKonusma.konusulanUserName),
+                        subtitle: Text(oankiKonusma.konusulanUserName +
+                            "  " +
+                            oankiKonusma.aradakiFark),
                         leading: CircleAvatar(
                           backgroundColor: Colors.grey.withAlpha(40),
                           backgroundImage:
