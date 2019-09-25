@@ -10,7 +10,7 @@ class KullanicilarPage extends StatefulWidget {
 }
 
 class _KullanicilarPageState extends State<KullanicilarPage> {
-  List<User> _tumKullanicilar = [];
+  List<User> _tumKullanicilar;
   bool _isLoading = false;
   bool _hasMore = true;
   int _getirilecekElemanSayisi = 10;
@@ -40,31 +40,22 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
     UserModel _userModel = Provider.of<UserModel>(context);
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Kullanicilar"),
-          actions: <Widget>[
-            FlatButton(
-                onPressed: () async {
-                  await getUser(_enSonGetirilenUser);
-                },
-                child: Text("Next Users"))
-          ],
-        ),
-        body: Column(
-          children: <Widget>[
-            Expanded(
-                child: _tumKullanicilar.length == 0
-                    ? Center(
-                        child: Text("Kullanıcı yok"),
-                      )
-                    : _kullaniciListesiniOlustur()),
-            _isLoading
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : Container(),
-          ],
-        ));
+      appBar: AppBar(
+        title: Text("Kullanicilar"),
+        actions: <Widget>[
+          FlatButton(
+              onPressed: () async {
+                await getUser(_enSonGetirilenUser);
+              },
+              child: Text("Next Users"))
+        ],
+      ),
+      body: _tumKullanicilar == null
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : _kullaniciListesiniOlustur(),
+    );
   }
 
   getUser(User enSonGetirilenUser) async {
@@ -90,6 +81,8 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
           .orderBy("userName")
           .limit(_getirilecekElemanSayisi)
           .getDocuments();
+
+      _tumKullanicilar = [];
     } else {
       print("Sonraki kullanıcılar getiriliyor");
       _querySnapshot = await Firestore.instance
@@ -98,6 +91,7 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
           .startAfter([enSonGetirilenUser.userName])
           .limit(_getirilecekElemanSayisi)
           .getDocuments();
+      await Future.delayed(Duration(seconds: 1));
     }
 
     if (_querySnapshot.documents.length < _getirilecekElemanSayisi) {
@@ -122,11 +116,32 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
     return ListView.builder(
       controller: _scrollController,
       itemBuilder: (context, index) {
+        print("index değeri:" +
+            index.toString() +
+            " listedeki eleman sayisi:" +
+            _tumKullanicilar.length.toString());
+
+        if (index == _tumKullanicilar.length) {
+          print("yeni elemanlar bekleniyor");
+          return _yeniElemanlarYukleniyorIndicator();
+        }
         return ListTile(
           title: Text(_tumKullanicilar[index].userName),
         );
       },
-      itemCount: _tumKullanicilar.length,
+      itemCount: _tumKullanicilar.length + 1,
+    );
+  }
+
+  _yeniElemanlarYukleniyorIndicator() {
+    return Padding(
+      padding: EdgeInsets.all(8),
+      child: Center(
+        child: Opacity(
+          opacity: _isLoading ? 1 : 0,
+          child: _isLoading ? CircularProgressIndicator() : null,
+        ),
+      ),
     );
   }
 }
