@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_lovers/app/sohbet_page.dart';
 import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
 import 'package:provider/provider.dart';
@@ -19,17 +20,19 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    getUser(_enSonGetirilenUser);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      getUser();
+    });
+
     _scrollController.addListener(() {
       if (_scrollController.position.atEdge) {
         if (_scrollController.position == 0) {
           print("En tepedeyiz");
         } else {
           print("listenin sonundayız");
-          getUser(_enSonGetirilenUser);
+          getUser();
         }
       }
     });
@@ -37,18 +40,9 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
 
   @override
   Widget build(BuildContext context) {
-    UserModel _userModel = Provider.of<UserModel>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Kullanicilar"),
-        actions: <Widget>[
-          FlatButton(
-              onPressed: () async {
-                await getUser(_enSonGetirilenUser);
-              },
-              child: Text("Next Users"))
-        ],
       ),
       body: _tumKullanicilar == null
           ? Center(
@@ -58,7 +52,9 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
     );
   }
 
-  getUser(User enSonGetirilenUser) async {
+  getUser() async {
+    final _userModel = Provider.of<UserModel>(context);
+
     if (!_hasMore) {
       print(
           "Getirilecek eleman kalmadı o yüzden firestore rahatsız edilmeyecek");
@@ -72,40 +68,21 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
       _isLoading = true;
     });
 
-    QuerySnapshot _querySnapshot;
+    List<User> _users = await _userModel.getUserwithPagination(
+        _enSonGetirilenUser, _getirilecekElemanSayisi);
 
-    if (enSonGetirilenUser == null) {
-      print("İlk defa kullanıcılar getiriliyor");
-      _querySnapshot = await Firestore.instance
-          .collection("users")
-          .orderBy("userName")
-          .limit(_getirilecekElemanSayisi)
-          .getDocuments();
-
+    if (_enSonGetirilenUser == null) {
       _tumKullanicilar = [];
+      _tumKullanicilar.addAll(_users);
     } else {
-      print("Sonraki kullanıcılar getiriliyor");
-      _querySnapshot = await Firestore.instance
-          .collection("users")
-          .orderBy("userName")
-          .startAfter([enSonGetirilenUser.userName])
-          .limit(_getirilecekElemanSayisi)
-          .getDocuments();
-      await Future.delayed(Duration(seconds: 1));
+      _tumKullanicilar.addAll(_users);
     }
 
-    if (_querySnapshot.documents.length < _getirilecekElemanSayisi) {
+    if (_users.length < _getirilecekElemanSayisi) {
       _hasMore = false;
     }
 
-    for (DocumentSnapshot snap in _querySnapshot.documents) {
-      User _tekUser = User.fromMap(snap.data);
-      _tumKullanicilar.add(_tekUser);
-      print("Getirilen user name:" + _tekUser.userName);
-    }
-
     _enSonGetirilenUser = _tumKullanicilar.last;
-    print("en son getirilen user name:" + _enSonGetirilenUser.userName);
 
     setState(() {
       _isLoading = false;
@@ -113,23 +90,78 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
   }
 
   _kullaniciListesiniOlustur() {
-    return ListView.builder(
-      controller: _scrollController,
-      itemBuilder: (context, index) {
-        print("index değeri:" +
-            index.toString() +
-            " listedeki eleman sayisi:" +
-            _tumKullanicilar.length.toString());
+    if (_tumKullanicilar.length > 1) {
+      return RefreshIndicator(
+        onRefresh: _kullaniciListesiRefresh,
+        child: ListView.builder(
+          controller: _scrollController,
+          itemBuilder: (context, index) {
+            if (index == _tumKullanicilar.length) {
+              return _yeniElemanlarYukleniyorIndicator();
+            }
+            return _userListeElemaniOlustur(index);
+          },
+          itemCount: _tumKullanicilar.length + 1,
+        ),
+      );
+    } else {
+      return RefreshIndicator(
+        onRefresh: _kullaniciListesiRefresh,
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Container(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.supervised_user_circle,
+                    color: Theme.of(context).primaryColor,
+                    size: 120,
+                  ),
+                  Text(
+                    "Henüz Kullanıcı Yok",
+                    style: TextStyle(fontSize: 36),
+                  )
+                ],
+              ),
+            ),
+            height: MediaQuery.of(context).size.height - 150,
+          ),
+        ),
+      );
+    }
+  }
 
-        if (index == _tumKullanicilar.length) {
-          print("yeni elemanlar bekleniyor");
-          return _yeniElemanlarYukleniyorIndicator();
-        }
-        return ListTile(
-          title: Text(_tumKullanicilar[index].userName),
+  Widget _userListeElemaniOlustur(int index) {
+    final _userModel = Provider.of<UserModel>(context);
+    var _oankiUser = _tumKullanicilar[index];
+
+    if (_oankiUser.userID == _userModel.user.userID) {
+      return Container();
+    }
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(
+              builder: (context) => SohbetPage(
+                    currentUser: _userModel.user,
+                    sohbetEdilenUser: _oankiUser,
+                  )),
         );
       },
-      itemCount: _tumKullanicilar.length + 1,
+      child: Card(
+        child: ListTile(
+          title: Text(_oankiUser.userName),
+          subtitle: Text(_oankiUser.email),
+          leading: CircleAvatar(
+            backgroundColor: Colors.grey.withAlpha(40),
+            backgroundImage: NetworkImage(_oankiUser.profilURL),
+          ),
+        ),
+      ),
     );
   }
 
@@ -143,5 +175,11 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
         ),
       ),
     );
+  }
+
+  Future<Null> _kullaniciListesiRefresh() async {
+    _hasMore = true;
+    _enSonGetirilenUser = null;
+    getUser();
   }
 }

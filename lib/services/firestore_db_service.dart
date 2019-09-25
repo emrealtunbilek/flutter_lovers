@@ -61,23 +61,6 @@ class FirestoreDBService implements DBBase {
   }
 
   @override
-  Future<List<User>> getAllUser() async {
-    QuerySnapshot querySnapshot =
-        await _firebaseDB.collection("users").getDocuments();
-
-    List<User> tumKullanicilar = [];
-    for (DocumentSnapshot tekUser in querySnapshot.documents) {
-      User _tekUser = User.fromMap(tekUser.data);
-      tumKullanicilar.add(_tekUser);
-    }
-
-    //MAP METOTU ILE
-    //tumKullanicilar = querySnapshot.documents.map((tekSatir)=>User.fromMap(tekSatir.data)).toList();
-
-    return tumKullanicilar;
-  }
-
-  @override
   Future<List<Konusma>> getAllConversations(String userID) async {
     QuerySnapshot querySnapshot = await _firebaseDB
         .collection("konusmalar")
@@ -183,5 +166,36 @@ class FirestoreDBService implements DBBase {
         await _firebaseDB.collection("server").document(userID).get();
     Timestamp okunanTarih = okunanMap.data["saat"];
     return okunanTarih.toDate();
+  }
+
+  @override
+  Future<List<User>> getUserwithPagination(
+      User enSonGetirilenUser, int getirilecekElemanSayisi) async {
+    QuerySnapshot _querySnapshot;
+    List<User> _tumKullanicilar = [];
+
+    if (enSonGetirilenUser == null) {
+      _querySnapshot = await Firestore.instance
+          .collection("users")
+          .orderBy("userName")
+          .limit(getirilecekElemanSayisi)
+          .getDocuments();
+    } else {
+      _querySnapshot = await Firestore.instance
+          .collection("users")
+          .orderBy("userName")
+          .startAfter([enSonGetirilenUser.userName])
+          .limit(getirilecekElemanSayisi)
+          .getDocuments();
+
+      await Future.delayed(Duration(seconds: 1));
+    }
+
+    for (DocumentSnapshot snap in _querySnapshot.documents) {
+      User _tekUser = User.fromMap(snap.data);
+      _tumKullanicilar.add(_tekUser);
+    }
+
+    return _tumKullanicilar;
   }
 }
