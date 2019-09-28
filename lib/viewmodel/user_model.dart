@@ -175,10 +175,4 @@ class UserModel with ChangeNotifier implements AuthBase {
   Future<List<Konusma>> getAllConversations(String userID) async {
     return await _userRepository.getAllConversations(userID);
   }
-
-  Future<List<User>> getUserwithPagination(
-      User enSonGetirilenUser, int getirilecekElemanSayisi) async {
-    return await _userRepository.getUserwithPagination(
-        enSonGetirilenUser, getirilecekElemanSayisi);
-  }
 }

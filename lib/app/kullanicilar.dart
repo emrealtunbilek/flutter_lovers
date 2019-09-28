@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/app/sohbet_page.dart';
-import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/viewmodel/all_users_view_model.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
 import 'package:provider/provider.dart';
@@ -12,29 +11,16 @@ class KullanicilarPage extends StatefulWidget {
 
 class _KullanicilarPageState extends State<KullanicilarPage> {
   bool _isLoading = false;
-  bool _hasMore = true;
-  int _getirilecekElemanSayisi = 10;
-  User _enSonGetirilenUser;
   ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-
-    _scrollController.addListener(() {
-      //minscrollextent listenin en sonu geldiğimizde olusur
-      //maxscrollextent listenin en basına geldiğimizde olusur
-      if (_scrollController.offset >=
-              _scrollController.position.minScrollExtent &&
-          !_scrollController.position.outOfRange) {
-        dahaFazlaKullaniciGetir();
-      }
-    });
+    _scrollController.addListener(_listeScrollListener);
   }
 
   @override
   Widget build(BuildContext context) {
-    final _tumKullanicilarViewModel = Provider.of<AllUserViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Kullanicilar"),
@@ -46,12 +32,25 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
               child: CircularProgressIndicator(),
             );
           } else if (model.state == AllUserViewState.Loaded) {
-            return ListView.builder(
-              controller: _scrollController,
-              itemBuilder: (context, index) {
-                return _userListeElemaniOlustur(index);
-              },
-              itemCount: model.kullanicilarListesi.length,
+            return RefreshIndicator(
+              onRefresh: model.refresh,
+              child: ListView.builder(
+                controller: _scrollController,
+                itemBuilder: (context, index) {
+                  if (model.kullanicilarListesi.length == 1) {
+                    return _kullaniciYokUi();
+                  } else if (model.hasMoreLoading &&
+                      index == model.kullanicilarListesi.length) {
+                    print("buradan geliyor");
+                    return _yeniElemanlarYukleniyorIndicator();
+                  } else {
+                    return _userListeElemaniOlustur(index);
+                  }
+                },
+                itemCount: model.hasMoreLoading
+                    ? model.kullanicilarListesi.length + 1
+                    : model.kullanicilarListesi.length,
+              ),
             );
           } else {
             return Container();
@@ -61,90 +60,36 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
     );
   }
 
-  /*
-  getUser() async {
-    final _userModel = Provider.of<UserModel>(context);
-
-    if (!_hasMore) {
-      print(
-          "Getirilecek eleman kalmadı o yüzden firestore rahatsız edilmeyecek");
-      return;
-    }
-    if (_isLoading) {
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    List<User> _users = await _userModel.getUserwithPagination(
-        _enSonGetirilenUser, _getirilecekElemanSayisi);
-
-    if (_enSonGetirilenUser == null) {
-      _tumKullanicilar = [];
-      _tumKullanicilar.addAll(_users);
-    } else {
-      _tumKullanicilar.addAll(_users);
-    }
-
-    if (_users.length < _getirilecekElemanSayisi) {
-      _hasMore = false;
-    }
-
-    _enSonGetirilenUser = _tumKullanicilar.last;
-
-    setState(() {
-      _isLoading = false;
-    });
-  }
-*/
-/*
-  _kullaniciListesiniOlustur() {
-    if (_tumKullanicilar.length > 1) {
-      return RefreshIndicator(
-        onRefresh: _kullaniciListesiRefresh,
-        child: ListView.builder(
-          controller: _scrollController,
-          itemBuilder: (context, index) {
-            if (index == _tumKullanicilar.length) {
-              return _yeniElemanlarYukleniyorIndicator();
-            }
-            return _userListeElemaniOlustur(index);
-          },
-          itemCount: _tumKullanicilar.length + 1,
-        ),
-      );
-    } else {
-      return RefreshIndicator(
-        onRefresh: _kullaniciListesiRefresh,
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Container(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
-                    Icons.supervised_user_circle,
-                    color: Theme.of(context).primaryColor,
-                    size: 120,
-                  ),
-                  Text(
-                    "Henüz Kullanıcı Yok",
-                    style: TextStyle(fontSize: 36),
-                  )
-                ],
-              ),
+  Widget _kullaniciYokUi() {
+    final _kullanicilarModel = Provider.of<AllUserViewModel>(context);
+    return RefreshIndicator(
+      onRefresh: _kullanicilarModel.refresh,
+      child: SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        child: Container(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.supervised_user_circle,
+                  color: Theme.of(context).primaryColor,
+                  size: 120,
+                ),
+                Text(
+                  "Henüz Kullanıcı Yok",
+                  style: TextStyle(fontSize: 36),
+                )
+              ],
             ),
-            height: MediaQuery.of(context).size.height - 150,
           ),
+          height: MediaQuery.of(context).size.height - 150,
         ),
-      );
-    }
+      ),
+    );
   }
-*/
+
   Widget _userListeElemaniOlustur(int index) {
     final _userModel = Provider.of<UserModel>(context);
     final _tumKullanicilarViewModel = Provider.of<AllUserViewModel>(context);
@@ -181,19 +126,10 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
     return Padding(
       padding: EdgeInsets.all(8),
       child: Center(
-        child: Opacity(
-          opacity: _isLoading ? 1 : 0,
-          child: _isLoading ? CircularProgressIndicator() : null,
-        ),
+        child: CircularProgressIndicator(),
       ),
     );
   }
-
-  /*Future<Null> _kullaniciListesiRefresh() async {
-    _hasMore = true;
-    _enSonGetirilenUser = null;
-    getUser();
-  }*/
 
   void dahaFazlaKullaniciGetir() async {
     if (_isLoading == false) {
@@ -201,6 +137,15 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
       final _tumKullanicilarViewModel = Provider.of<AllUserViewModel>(context);
       await _tumKullanicilarViewModel.dahaFazlaUserGetir();
       _isLoading = false;
+    }
+  }
+
+  void _listeScrollListener() {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      print("Listenin en altındayız");
+      dahaFazlaKullaniciGetir();
     }
   }
 }
