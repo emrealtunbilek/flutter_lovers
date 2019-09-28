@@ -1,17 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/model/mesaj.dart';
-import 'package:flutter_lovers/model/user.dart';
-import 'package:flutter_lovers/viewmodel/user_model.dart';
+import 'package:flutter_lovers/viewmodel/chat_view_model.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class SohbetPage extends StatefulWidget {
-  final User currentUser;
-  final User sohbetEdilenUser;
-
-  SohbetPage({this.currentUser, this.sohbetEdilenUser});
-
   @override
   _SohbetPageState createState() => _SohbetPageState();
 }
@@ -19,103 +13,117 @@ class SohbetPage extends StatefulWidget {
 class _SohbetPageState extends State<SohbetPage> {
   var _mesajController = TextEditingController();
   ScrollController _scrollController = new ScrollController();
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
 
   @override
   Widget build(BuildContext context) {
-    User _currentUser = widget.currentUser;
-    User _sohbetEdilenUser = widget.sohbetEdilenUser;
-    final _userModel = Provider.of<UserModel>(context);
+    final _chatModel = Provider.of<ChatViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Sohbet"),
       ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: StreamBuilder<List<Mesaj>>(
-                  stream: _userModel.getMessages(
-                      _currentUser.userID, _sohbetEdilenUser.userID),
-                  builder: (context, streamMesajlarListesi) {
-                    if (!streamMesajlarListesi.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    List<Mesaj> tumMesajlar = streamMesajlarListesi.data;
-
-                    return ListView.builder(
-                      controller: _scrollController,
-                      reverse: true,
-                      itemBuilder: (context, index) {
-                        return _konusmaBalonuOlustur(tumMesajlar[index]);
-                      },
-                      itemCount: tumMesajlar.length,
-                    );
-                  }),
-            ),
-            Container(
-              padding: EdgeInsets.only(bottom: 8, left: 8),
-              child: Row(
+      body: _chatModel.state == ChatViewState.Busy
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Center(
+              child: Column(
                 children: <Widget>[
-                  Expanded(
-                    child: TextField(
-                      controller: _mesajController,
-                      cursorColor: Colors.blueGrey,
-                      style: new TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.black,
-                      ),
-                      decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: "Mesajınızı Yazın",
-                        border: new OutlineInputBorder(
-                            borderRadius: new BorderRadius.circular(30.0),
-                            borderSide: BorderSide.none),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(
-                      horizontal: 4,
-                    ),
-                    child: FloatingActionButton(
-                      elevation: 0,
-                      backgroundColor: Colors.blue,
-                      child: Icon(
-                        Icons.navigation,
-                        size: 35,
-                        color: Colors.white,
-                      ),
-                      onPressed: () async {
-                        if (_mesajController.text.trim().length > 0) {
-                          Mesaj _kaydedilecekMesaj = Mesaj(
-                            kimden: _currentUser.userID,
-                            kime: _sohbetEdilenUser.userID,
-                            bendenMi: true,
-                            mesaj: _mesajController.text,
-                          );
-
-                          var sonuc =
-                              await _userModel.saveMessage(_kaydedilecekMesaj);
-                          if (sonuc) {
-                            _mesajController.clear();
-                            _scrollController.animateTo(
-                              0,
-                              curve: Curves.easeOut,
-                              duration: const Duration(milliseconds: 10),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                  ),
+                  _buildMesajListesi(),
+                  _buildYeniMesajGir(),
                 ],
               ),
             ),
-          ],
+    );
+  }
+
+  Widget _buildMesajListesi() {
+    return Consumer<ChatViewModel>(builder: (context, chatModel, child) {
+      return Expanded(
+        child: ListView.builder(
+          controller: _scrollController,
+          reverse: true,
+          itemBuilder: (context, index) {
+            if (chatModel.hasMoreLoading &&
+                chatModel.mesajlarListesi.length == index) {
+              return _yeniElemanlarYukleniyorIndicator();
+            } else
+              return _konusmaBalonuOlustur(chatModel.mesajlarListesi[index]);
+          },
+          itemCount: chatModel.hasMoreLoading
+              ? chatModel.mesajlarListesi.length + 1
+              : chatModel.mesajlarListesi.length,
         ),
+      );
+    });
+  }
+
+  Widget _buildYeniMesajGir() {
+    final _chatModel = Provider.of<ChatViewModel>(context);
+    return Container(
+      padding: EdgeInsets.only(bottom: 8, left: 8),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: TextField(
+              controller: _mesajController,
+              cursorColor: Colors.blueGrey,
+              style: new TextStyle(
+                fontSize: 16.0,
+                color: Colors.black,
+              ),
+              decoration: InputDecoration(
+                fillColor: Colors.white,
+                filled: true,
+                hintText: "Mesajınızı Yazın",
+                border: new OutlineInputBorder(
+                    borderRadius: new BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(
+              horizontal: 4,
+            ),
+            child: FloatingActionButton(
+              elevation: 0,
+              backgroundColor: Colors.blue,
+              child: Icon(
+                Icons.navigation,
+                size: 35,
+                color: Colors.white,
+              ),
+              onPressed: () async {
+                if (_mesajController.text.trim().length > 0) {
+                  Mesaj _kaydedilecekMesaj = Mesaj(
+                    kimden: _chatModel.currentUser.userID,
+                    kime: _chatModel.sohbetEdilenUser.userID,
+                    bendenMi: true,
+                    mesaj: _mesajController.text,
+                  );
+
+                  var sonuc = await _chatModel.saveMessage(_kaydedilecekMesaj);
+                  if (sonuc) {
+                    _mesajController.clear();
+                    _scrollController.animateTo(
+                      0,
+                      curve: Curves.easeOut,
+                      duration: const Duration(milliseconds: 10),
+                    );
+                  }
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -123,7 +131,7 @@ class _SohbetPageState extends State<SohbetPage> {
   Widget _konusmaBalonuOlustur(Mesaj oankiMesaj) {
     Color _gelenMesajRenk = Colors.blue;
     Color _gidenMesajRenk = Theme.of(context).primaryColor;
-
+    final _chatModel = Provider.of<ChatViewModel>(context);
     var _saatDakikaDegeri = "";
 
     try {
@@ -172,7 +180,7 @@ class _SohbetPageState extends State<SohbetPage> {
                 CircleAvatar(
                   backgroundColor: Colors.grey.withAlpha(40),
                   backgroundImage:
-                      NetworkImage(widget.sohbetEdilenUser.profilURL),
+                      NetworkImage(_chatModel.sohbetEdilenUser.profilURL),
                 ),
                 Flexible(
                   child: Container(
@@ -199,5 +207,31 @@ class _SohbetPageState extends State<SohbetPage> {
     var _formatter = DateFormat.Hm();
     var _formatlanmisTarih = _formatter.format(date.toDate());
     return _formatlanmisTarih;
+  }
+
+  void _scrollListener() {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      eskiMesajlariGetir();
+    }
+  }
+
+  void eskiMesajlariGetir() async {
+    final _chatModel = Provider.of<ChatViewModel>(context);
+    if (_isLoading == false) {
+      _isLoading = true;
+      await _chatModel.dahaFazlaMesajGetir();
+      _isLoading = false;
+    }
+  }
+
+  _yeniElemanlarYukleniyorIndicator() {
+    return Padding(
+      padding: EdgeInsets.all(8),
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 }
