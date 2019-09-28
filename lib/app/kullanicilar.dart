@@ -27,13 +27,12 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
     });
 
     _scrollController.addListener(() {
-      if (_scrollController.position.atEdge) {
-        if (_scrollController.position == 0) {
-          print("En tepedeyiz");
-        } else {
-          print("listenin sonundayız");
-          getUser();
-        }
+      //minscrollextent listenin en sonu geldiğimizde olusur
+      //maxscrollextent listenin en basına geldiğimizde olusur
+      if (_scrollController.offset >=
+              _scrollController.position.minScrollExtent &&
+          !_scrollController.position.outOfRange) {
+        getUser();
       }
     });
   }
