@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/app/sohbet_page.dart';
 import 'package:flutter_lovers/viewmodel/all_users_view_model.dart';
+import 'package:flutter_lovers/viewmodel/chat_view_model.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
 import 'package:provider/provider.dart';
 
@@ -103,10 +104,12 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
       onTap: () {
         Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
-              builder: (context) => SohbetPage(
-                    currentUser: _userModel.user,
-                    sohbetEdilenUser: _oankiUser,
-                  )),
+            builder: (context) => ChangeNotifierProvider(
+              builder: (context) => ChatViewModel(
+                  currentUser: _userModel.user, sohbetEdilenUser: _oankiUser),
+              child: SohbetPage(),
+            ),
+          ),
         );
       },
       child: Card(
