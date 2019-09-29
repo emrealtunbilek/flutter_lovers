@@ -42,7 +42,6 @@ class _KullanicilarPageState extends State<KullanicilarPage> {
                     return _kullaniciYokUi();
                   } else if (model.hasMoreLoading &&
                       index == model.kullanicilarListesi.length) {
-                    print("buradan geliyor");
                     return _yeniElemanlarYukleniyorIndicator();
                   } else {
                     return _userListeElemaniOlustur(index);

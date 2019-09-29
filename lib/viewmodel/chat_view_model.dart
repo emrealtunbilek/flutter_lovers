@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/locator.dart';
 import 'package:flutter_lovers/model/mesaj.dart';
@@ -20,6 +22,8 @@ class ChatViewModel with ChangeNotifier {
 
   bool get hasMoreLoading => _hasMore;
 
+  StreamSubscription _streamSubscription;
+
   ChatViewModel({this.currentUser, this.sohbetEdilenUser}) {
     _tumMesajlar = [];
     getMessageWithPagination(false);
@@ -32,6 +36,13 @@ class ChatViewModel with ChangeNotifier {
   set state(ChatViewState value) {
     _state = value;
     notifyListeners();
+  }
+
+  @override
+  dispose() {
+    print("Chatviewmodel dispose edildi");
+    _streamSubscription.cancel();
+    super.dispose();
   }
 
   Future<bool> saveMessage(Mesaj kaydedilecekMesaj) async {
@@ -55,20 +66,20 @@ class ChatViewModel with ChangeNotifier {
       _hasMore = false;
     }
 
-    getirilenMesajlar
-        .forEach((msj) => print("getirilen mesajlar:" + msj.mesaj));
+    /*getirilenMesajlar
+        .forEach((msj) => print("getirilen mesajlar:" + msj.mesaj));*/
 
     _tumMesajlar.addAll(getirilenMesajlar);
     if (_tumMesajlar.length > 0) {
       _listeyeEklenenIlkMesaj = _tumMesajlar.first;
-      print("Listeye eklenen ilk mesaj :" + _listeyeEklenenIlkMesaj.mesaj);
+      // print("Listeye eklenen ilk mesaj :" + _listeyeEklenenIlkMesaj.mesaj);
     }
 
     state = ChatViewState.Loaded;
 
     if (_yeniMesajDinleListener == false) {
       _yeniMesajDinleListener = true;
-      print("Listener yok o yüzden atanacak");
+      //print("Listener yok o yüzden atanacak");
       yeniMesajListenerAta();
     }
   }
@@ -84,7 +95,7 @@ class ChatViewModel with ChangeNotifier {
 
   void yeniMesajListenerAta() {
     print("Yeni mesajlar için listener atandı");
-    _userRepository
+    _streamSubscription = _userRepository
         .getMessages(currentUser.userID, sohbetEdilenUser.userID)
         .listen((anlikData) {
       if (anlikData.isNotEmpty) {
