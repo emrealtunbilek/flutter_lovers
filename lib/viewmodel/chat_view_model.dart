@@ -9,12 +9,14 @@ enum ChatViewState { Idle, Loaded, Busy }
 class ChatViewModel with ChangeNotifier {
   List<Mesaj> _tumMesajlar;
   ChatViewState _state = ChatViewState.Idle;
-  static final sayfaBasinaGonderiSayisi = 30;
+  static final sayfaBasinaGonderiSayisi = 10;
   UserRepository _userRepository = locator<UserRepository>();
   final User currentUser;
   final User sohbetEdilenUser;
   Mesaj _enSonGetirilenMesaj;
+  Mesaj _listeyeEklenenIlkMesaj;
   bool _hasMore = true;
+  bool _yeniMesajDinleListener = false;
 
   bool get hasMoreLoading => _hasMore;
 
@@ -37,7 +39,7 @@ class ChatViewModel with ChangeNotifier {
   }
 
   void getMessageWithPagination(bool yeniMesajlarGetiriliyor) async {
-    if (_tumMesajlar.length > 1) {
+    if (_tumMesajlar.length > 0) {
       _enSonGetirilenMesaj = _tumMesajlar.last;
     }
 
@@ -57,7 +59,18 @@ class ChatViewModel with ChangeNotifier {
         .forEach((msj) => print("getirilen mesajlar:" + msj.mesaj));
 
     _tumMesajlar.addAll(getirilenMesajlar);
+    if (_tumMesajlar.length > 0) {
+      _listeyeEklenenIlkMesaj = _tumMesajlar.first;
+      print("Listeye eklenen ilk mesaj :" + _listeyeEklenenIlkMesaj.mesaj);
+    }
+
     state = ChatViewState.Loaded;
+
+    if (_yeniMesajDinleListener == false) {
+      _yeniMesajDinleListener = true;
+      print("Listener yok o yüzden atanacak");
+      yeniMesajListenerAta();
+    }
   }
 
   Future<void> dahaFazlaMesajGetir() async {
@@ -67,5 +80,27 @@ class ChatViewModel with ChangeNotifier {
     else
       print("Daha fazla eleman yok o yüzden çagrılmayacak");
     await Future.delayed(Duration(seconds: 2));
+  }
+
+  void yeniMesajListenerAta() {
+    print("Yeni mesajlar için listener atandı");
+    _userRepository
+        .getMessages(currentUser.userID, sohbetEdilenUser.userID)
+        .listen((anlikData) {
+      if (anlikData.isNotEmpty) {
+        print("listener tetiklendi ve son getirilen veri:" +
+            anlikData[0].toString());
+
+        if (anlikData[0].date != null) {
+          if (_listeyeEklenenIlkMesaj == null) {
+            _tumMesajlar.insert(0, anlikData[0]);
+          } else if (_listeyeEklenenIlkMesaj.date.millisecondsSinceEpoch !=
+              anlikData[0].date.millisecondsSinceEpoch)
+            _tumMesajlar.insert(0, anlikData[0]);
+        }
+
+        state = ChatViewState.Loaded;
+      }
+    });
   }
 }

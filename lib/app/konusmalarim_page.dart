@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/app/sohbet_page.dart';
 import 'package:flutter_lovers/model/konusma.dart';
-import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
 import 'package:provider/provider.dart';
 
@@ -41,12 +40,12 @@ class _KonusmalarimPageState extends State<KonusmalarimPage> {
                         Navigator.of(context, rootNavigator: true).push(
                           MaterialPageRoute(
                             builder: (context) => SohbetPage(
-                              currentUser: _userModel.user,
+                                /*currentUser: _userModel.user,
                               sohbetEdilenUser: User.idveResim(
                                   userID: oankiKonusma.kimle_konusuyor,
                                   profilURL:
-                                      oankiKonusma.konusulanUserProfilURL),
-                            ),
+                                      oankiKonusma.konusulanUserProfilURL),*/
+                                ),
                           ),
                         );
                       },
