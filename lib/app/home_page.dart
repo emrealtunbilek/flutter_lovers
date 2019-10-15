@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/app/konusmalarim_page.dart';
 import 'package:flutter_lovers/app/kullanicilar.dart';
@@ -18,6 +19,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
   TabItem _currentTab = TabItem.Kullanicilar;
 
   Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {
@@ -35,6 +38,23 @@ class _HomePageState extends State<HomePage> {
       TabItem.Konusmalarim: KonusmalarimPage(),
       TabItem.Profil: ProfilPage(),
     };
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage tetiklendi: $message");
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch tetiklendi: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume tetiklendi: $message");
+      },
+    );
   }
 
   @override
