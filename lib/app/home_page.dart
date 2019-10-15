@@ -45,12 +45,15 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    _firebaseMessaging.subscribeToTopic("spor");
+
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage tetiklendi: $message");
         PlatformDuyarliAlertDialog(
                 baslik: message['data']['title'],
-                icerik: message['data']['body'],
+                icerik: message['data']['message'],
                 anaButonYazisi: "Tamam")
             .goster(context);
       },
