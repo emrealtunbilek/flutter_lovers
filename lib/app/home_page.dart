@@ -5,6 +5,7 @@ import 'package:flutter_lovers/app/kullanicilar.dart';
 import 'package:flutter_lovers/app/my_custom_bottom_navi.dart';
 import 'package:flutter_lovers/app/profil.dart';
 import 'package:flutter_lovers/app/tab_items.dart';
+import 'package:flutter_lovers/common_widget/platform_duyarli_alert_dialog.dart';
 import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/viewmodel/all_users_view_model.dart';
 import 'package:provider/provider.dart';
@@ -47,12 +48,24 @@ class _HomePageState extends State<HomePage> {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage tetiklendi: $message");
+        PlatformDuyarliAlertDialog(
+                baslik: message['data']['title'],
+                icerik: message['data']['body'],
+                anaButonYazisi: "Tamam")
+            .goster(context);
       },
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch tetiklendi: $message");
+        //emre -> ayseye mesaj attı
+        //bildirim verileri al ondan sonra bildirimi goster
       },
       onResume: (Map<String, dynamic> message) async {
         print("onResume tetiklendi: $message");
+        PlatformDuyarliAlertDialog(
+                baslik: message['data']['title'],
+                icerik: message['data']['body'],
+                anaButonYazisi: "Tamam")
+            .goster(context);
       },
     );
   }
