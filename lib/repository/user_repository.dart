@@ -30,7 +30,10 @@ class UserRepository implements AuthBase {
       return await _fakeAuthenticationService.currentUser();
     } else {
       User _user = await _firebaseAuthService.currentUser();
-      return await _firestoreDBService.readUser(_user.userID);
+      if (_user != null)
+        return await _firestoreDBService.readUser(_user.userID);
+      else
+        return null;
     }
   }
 
@@ -58,9 +61,14 @@ class UserRepository implements AuthBase {
       return await _fakeAuthenticationService.signInWithGoogle();
     } else {
       User _user = await _firebaseAuthService.signInWithGoogle();
-      bool _sonuc = await _firestoreDBService.saveUser(_user);
-      if (_sonuc) {
-        return await _firestoreDBService.readUser(_user.userID);
+      if (_user != null) {
+        bool _sonuc = await _firestoreDBService.saveUser(_user);
+        if (_sonuc) {
+          return await _firestoreDBService.readUser(_user.userID);
+        } else {
+          await _firebaseAuthService.signOut();
+          return null;
+        }
       } else
         return null;
     }
@@ -72,9 +80,15 @@ class UserRepository implements AuthBase {
       return await _fakeAuthenticationService.signInWithFacebook();
     } else {
       User _user = await _firebaseAuthService.signInWithFacebook();
-      bool _sonuc = await _firestoreDBService.saveUser(_user);
-      if (_sonuc) {
-        return await _firestoreDBService.readUser(_user.userID);
+
+      if (_user != null) {
+        bool _sonuc = await _firestoreDBService.saveUser(_user);
+        if (_sonuc) {
+          return await _firestoreDBService.readUser(_user.userID);
+        } else {
+          await _firebaseAuthService.signOut();
+          return null;
+        }
       } else
         return null;
     }

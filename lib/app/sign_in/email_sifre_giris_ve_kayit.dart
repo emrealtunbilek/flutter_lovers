@@ -71,8 +71,8 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
     final _userModel = Provider.of<UserModel>(context);
 
     if (_userModel.user != null) {
-      Future.delayed(Duration(milliseconds: 10), () {
-        Navigator.of(context).pop();
+      Future.delayed(Duration(milliseconds: 1), () {
+        Navigator.of(context).popUntil(ModalRoute.withName("/"));
       });
     }
 
