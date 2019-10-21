@@ -45,8 +45,8 @@ class ChatViewModel with ChangeNotifier {
     super.dispose();
   }
 
-  Future<bool> saveMessage(Mesaj kaydedilecekMesaj) async {
-    return await _userRepository.saveMessage(kaydedilecekMesaj);
+  Future<bool> saveMessage(Mesaj kaydedilecekMesaj, User currentUser) async {
+    return await _userRepository.saveMessage(kaydedilecekMesaj, currentUser);
   }
 
   void getMessageWithPagination(bool yeniMesajlarGetiriliyor) async {

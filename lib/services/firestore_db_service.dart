@@ -236,4 +236,13 @@ class FirestoreDBService implements DBBase {
 
     return _tumMesajlar;
   }
+
+  Future<String> tokenGetir(String kime) async {
+    DocumentSnapshot _token =
+        await _firebaseDB.document("tokens/" + kime).get();
+    if (_token != null)
+      return _token.data["token"];
+    else
+      return null;
+  }
 }

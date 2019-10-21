@@ -35,6 +35,7 @@ dependencies:
   timeago: ^2.0.19
   firebase_messaging: ^5.1.6
   flutter_local_notifications: ^0.8.4
+  http: ^0.12.0+2
 
 dev_dependencies:
   flutter_test:

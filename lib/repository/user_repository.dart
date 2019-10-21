@@ -5,6 +5,7 @@ import 'package:flutter_lovers/model/konusma.dart';
 import 'package:flutter_lovers/model/mesaj.dart';
 import 'package:flutter_lovers/model/user.dart';
 import 'package:flutter_lovers/services/auth_base.dart';
+import 'package:flutter_lovers/services/bildirim_gonderme_servis.dart';
 import 'package:flutter_lovers/services/fake_auth_service.dart';
 import 'package:flutter_lovers/services/firebase_auth_service.dart';
 import 'package:flutter_lovers/services/firebase_storage_service.dart';
@@ -20,9 +21,12 @@ class UserRepository implements AuthBase {
   FirestoreDBService _firestoreDBService = locator<FirestoreDBService>();
   FirebaseStorageService _firebaseStorageService =
       locator<FirebaseStorageService>();
+  BildirimGondermeServis _bildirimGondermeServis =
+      locator<BildirimGondermeServis>();
 
   AppMode appMode = AppMode.RELEASE;
   List<User> tumKullaniciListesi = [];
+  Map<String, String> kullaniciToken = Map<String, String>();
 
   @override
   Future<User> currentUser() async {
@@ -153,11 +157,31 @@ class UserRepository implements AuthBase {
     }
   }
 
-  Future<bool> saveMessage(Mesaj kaydedilecekMesaj) async {
+  Future<bool> saveMessage(Mesaj kaydedilecekMesaj, User currentUser) async {
     if (appMode == AppMode.DEBUG) {
       return true;
     } else {
-      return _firestoreDBService.saveMessage(kaydedilecekMesaj);
+      var dbYazmaIslemi =
+          await _firestoreDBService.saveMessage(kaydedilecekMesaj);
+
+      if (dbYazmaIslemi) {
+        var token = "";
+        if (kullaniciToken.containsKey(kaydedilecekMesaj.kime)) {
+          token = kullaniciToken[kaydedilecekMesaj.kime];
+          print("Localden geldi:" + token);
+        } else {
+          token = await _firestoreDBService.tokenGetir(kaydedilecekMesaj.kime);
+          if (token != null) kullaniciToken[kaydedilecekMesaj.kime] = token;
+          print("Veri tabanından geldi:" + token);
+        }
+
+        if (token != null)
+          await _bildirimGondermeServis.bildirimGonder(
+              kaydedilecekMesaj, currentUser, token);
+
+        return true;
+      } else
+        return false;
     }
   }
 
