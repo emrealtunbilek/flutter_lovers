@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -35,10 +37,17 @@ class NotificationHandler {
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: onSelectNotification);
 
-    _fcm.subscribeToTopic("spor");
+    /*_fcm.subscribeToTopic("spor");
 
     String token = await _fcm.getToken();
     print("token :" + token);
+    */
+    _fcm.onTokenRefresh.listen((newToken) async {
+      FirebaseUser _currentUser = await FirebaseAuth.instance.currentUser();
+      await Firestore.instance
+          .document("tokens/" + _currentUser.uid)
+          .setData({"token": newToken});
+    });
 
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
