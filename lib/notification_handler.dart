@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -65,9 +69,24 @@ class NotificationHandler {
   }
 
   static void showNotification(Map<String, dynamic> message) async {
+    var userURLPath =
+        await _downloadAndSaveImage(message["data"]["profilURL"], 'largeIcon');
+
+    var mesaj = Person(
+        name: message["data"]["title"],
+        key: '1',
+        icon: userURLPath,
+        iconSource: IconSource.FilePath);
+    var mesajStyle = MessagingStyleInformation(mesaj,
+        messages: [Message(message["data"]["message"], DateTime.now(), mesaj)]);
+
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
         '1234', 'Yeni Mesaj', 'your channel description',
-        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
+        style: AndroidNotificationStyle.Messaging,
+        styleInformation: mesajStyle,
+        importance: Importance.Max,
+        priority: Priority.High,
+        ticker: 'ticker');
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
@@ -84,4 +103,13 @@ class NotificationHandler {
 
   Future onDidReceiveLocalNotification(
       int id, String title, String body, String payload) {}
+
+  static _downloadAndSaveImage(String url, String name) async {
+    var directory = await getApplicationDocumentsDirectory();
+    var filePath = '${directory.path}/$name';
+    var response = await http.get(url);
+    var file = File(filePath);
+    await file.writeAsBytes(response.bodyBytes);
+    return filePath;
+  }
 }
