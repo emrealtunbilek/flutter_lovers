@@ -1,12 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_lovers/app/sohbet_page.dart';
+import 'package:flutter_lovers/model/user.dart';
+import 'package:flutter_lovers/viewmodel/chat_view_model.dart';
+import 'package:flutter_lovers/viewmodel/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -30,8 +37,11 @@ class NotificationHandler {
     return _singleton;
   }
   NotificationHandler._internal();
+  BuildContext myContext;
 
   initializeFCMNotification(BuildContext context) async {
+    myContext = context;
+
     var initializationSettingsAndroid =
         AndroidInitializationSettings('app_icon');
     var initializationSettingsIOS = IOSInitializationSettings(
@@ -69,13 +79,13 @@ class NotificationHandler {
   }
 
   static void showNotification(Map<String, dynamic> message) async {
-    var userURLPath =
-        await _downloadAndSaveImage(message["data"]["profilURL"], 'largeIcon');
+    //var userURLPath =
+    await _downloadAndSaveImage(message["data"]["profilURL"], 'largeIcon');
 
     var mesaj = Person(
         name: message["data"]["title"],
         key: '1',
-        icon: userURLPath,
+        //icon: userURLPath,
         iconSource: IconSource.FilePath);
     var mesajStyle = MessagingStyleInformation(mesaj,
         messages: [Message(message["data"]["message"], DateTime.now(), mesaj)]);
@@ -92,12 +102,29 @@ class NotificationHandler {
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(0, message["data"]["title"],
         message["data"]["message"], platformChannelSpecifics,
-        payload: 'Bildirim tıklanılınca aktarılan değer');
+        payload: jsonEncode(message));
   }
 
-  Future onSelectNotification(String payload) {
+  Future onSelectNotification(String payload) async {
+    final _userModel = Provider.of<UserModel>(myContext);
+
     if (payload != null) {
       debugPrint('notification payload: ' + payload);
+
+      Map<String, dynamic> gelenBildirim = await jsonDecode(payload);
+
+      Navigator.of(myContext, rootNavigator: true).push(
+        MaterialPageRoute(
+          builder: (context) => ChangeNotifierProvider(
+            builder: (context) => ChatViewModel(
+                currentUser: _userModel.user,
+                sohbetEdilenUser: User.idveResim(
+                    userID: gelenBildirim["data"]["gonderenUserID"],
+                    profilURL: gelenBildirim["data"]["profilURL"])),
+            child: SohbetPage(),
+          ),
+        ),
+      );
     }
   }
 
