@@ -1,8 +1,10 @@
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lovers/admob_islemleri.dart';
 import 'package:flutter_lovers/app/tab_items.dart';
 
-class MyCustomBottomNavigation extends StatelessWidget {
+class MyCustomBottomNavigation extends StatefulWidget {
   const MyCustomBottomNavigation(
       {Key key,
       @required this.currentTab,
@@ -17,24 +19,53 @@ class MyCustomBottomNavigation extends StatelessWidget {
   final Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys;
 
   @override
+  _MyCustomBottomNavigationState createState() =>
+      _MyCustomBottomNavigationState();
+}
+
+class _MyCustomBottomNavigationState extends State<MyCustomBottomNavigation> {
+  BannerAd myBannerAd;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    AdmobIslemleri.admobInitialize();
+    myBannerAd = AdmobIslemleri.buildBannerAd();
+    //myBannerAd.load();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return CupertinoTabScaffold(
-      tabBar: CupertinoTabBar(
-        items: [
-          _navItemOlustur(TabItem.Kullanicilar),
-          _navItemOlustur(TabItem.Konusmalarim),
-          _navItemOlustur(TabItem.Profil),
-        ],
-        onTap: (index) => onSelectedTab(TabItem.values[index]),
-      ),
-      tabBuilder: (context, index) {
-        final gosterilecekItem = TabItem.values[index];
-        return CupertinoTabView(
-            navigatorKey: navigatorKeys[gosterilecekItem],
-            builder: (context) {
-              return sayfaOlusturucu[gosterilecekItem];
-            });
-      },
+    myBannerAd
+      ..load()
+      ..show(anchorOffset: 0);
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: CupertinoTabScaffold(
+            tabBar: CupertinoTabBar(
+              items: [
+                _navItemOlustur(TabItem.Kullanicilar),
+                _navItemOlustur(TabItem.Konusmalarim),
+                _navItemOlustur(TabItem.Profil),
+              ],
+              onTap: (index) => widget.onSelectedTab(TabItem.values[index]),
+            ),
+            tabBuilder: (context, index) {
+              final gosterilecekItem = TabItem.values[index];
+              return CupertinoTabView(
+                  navigatorKey: widget.navigatorKeys[gosterilecekItem],
+                  builder: (context) {
+                    return widget.sayfaOlusturucu[gosterilecekItem];
+                  });
+            },
+          ),
+        ),
+        SizedBox(
+          height: 45,
+        ),
+      ],
     );
   }
 
