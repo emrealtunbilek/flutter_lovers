@@ -6,6 +6,8 @@ class AdmobIslemleri {
   static int kacKereGosterildi = 0;
   static final String banner1Canli = "ca-app-pub-6683595221234017/3327622295";
 
+  static final String odulluReklamTest = RewardedVideoAd.testAdUnitId;
+
   static admobInitialize() {
     FirebaseAdMob.instance.initialize(appId: appIDTest);
   }
@@ -14,7 +16,9 @@ class AdmobIslemleri {
     keywords: <String>['flutter', 'chat app'],
     contentUrl: 'https://emrealtunbilek.com',
     childDirected: false,
-    testDevices: <String>[], // Android emulators are considered test devices
+    testDevices: <String>[
+      "68C58FF8AC07663D32A29116FBC317F0"
+    ], // Android emulators are considered test devices
   );
 
   static BannerAd buildBannerAd() {

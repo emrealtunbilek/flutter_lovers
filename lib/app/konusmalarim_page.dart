@@ -1,4 +1,6 @@
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lovers/admob_islemleri.dart';
 import 'package:flutter_lovers/app/sohbet_page.dart';
 import 'package:flutter_lovers/model/konusma.dart';
 import 'package:flutter_lovers/model/user.dart';
@@ -12,6 +14,39 @@ class KonusmalarimPage extends StatefulWidget {
 }
 
 class _KonusmalarimPageState extends State<KonusmalarimPage> {
+  @override
+  void initState() {
+    super.initState();
+    RewardedVideoAd.instance.load(
+        adUnitId: AdmobIslemleri.odulluReklamTest,
+        targetingInfo: AdmobIslemleri.targetingInfo);
+
+    RewardedVideoAd.instance.listener =
+        (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
+      if (event == RewardedVideoAdEvent.rewarded) {
+        print(" *************** ODULLU REKLAM ***** ODUL VER");
+        odulluReklamLoad();
+      } else if (event == RewardedVideoAdEvent.loaded) {
+        print(
+            " *************** ODULLU REKLAM ***** REKLAM yuklendı ve gosterilecek");
+        RewardedVideoAd.instance.show();
+      } else if (event == RewardedVideoAdEvent.closed) {
+        print(" *************** ODULLU REKLAM ***** REKLAM KAPATILDI");
+      } else if (event == RewardedVideoAdEvent.failedToLoad) {
+        print(" *************** ODULLU REKLAM ***** REKLAM BULUNAMADI");
+        odulluReklamLoad();
+      } else if (event == RewardedVideoAdEvent.completed) {
+        print(" *************** ODULLU REKLAM ***** COMPLETED");
+      }
+    };
+  }
+
+  void odulluReklamLoad() {
+    RewardedVideoAd.instance.load(
+        adUnitId: AdmobIslemleri.odulluReklamTest,
+        targetingInfo: AdmobIslemleri.targetingInfo);
+  }
+
   @override
   Widget build(BuildContext context) {
     UserModel _userModel = Provider.of<UserModel>(context);
