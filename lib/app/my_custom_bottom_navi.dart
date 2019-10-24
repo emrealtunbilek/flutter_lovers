@@ -32,7 +32,14 @@ class _MyCustomBottomNavigationState extends State<MyCustomBottomNavigation> {
     super.initState();
     AdmobIslemleri.admobInitialize();
     myBannerAd = AdmobIslemleri.buildBannerAd();
+
     //myBannerAd.load();
+  }
+
+  @override
+  void dispose() {
+    myBannerAd.dispose();
+    super.dispose();
   }
 
   @override
