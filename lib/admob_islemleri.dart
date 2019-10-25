@@ -12,12 +12,15 @@ class AdmobIslemleri {
     FirebaseAdMob.instance.initialize(appId: appIDTest);
   }
 
+  static BannerAd myBannerAd;
+
   static final MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
     keywords: <String>['flutter', 'chat app'],
     contentUrl: 'https://emrealtunbilek.com',
     childDirected: false,
     testDevices: <String>[
-      "68C58FF8AC07663D32A29116FBC317F0"
+      "68C58FF8AC07663D32A29116FBC317F0",
+      "578FB3D680F288A70781109F24275F24"
     ], // Android emulators are considered test devices
   );
 

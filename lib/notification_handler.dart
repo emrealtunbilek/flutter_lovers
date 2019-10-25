@@ -22,7 +22,7 @@ Future<void> myBackgroundMessageHandler(Map<String, dynamic> message) {
   if (message.containsKey('data')) {
     // Handle data message
     final dynamic data = message['data'];
-    print("Arka planda gelen data:" + message["data"].toString());
+    //print("Arka planda gelen data:" + message["data"].toString());
     NotificationHandler.showNotification(message);
   }
 
@@ -65,15 +65,15 @@ class NotificationHandler {
 
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
-        print("onMessage tetiklendi: $message");
+        //print("onMessage tetiklendi: $message");
         showNotification(message);
       },
       onBackgroundMessage: myBackgroundMessageHandler,
       onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch tetiklendi: $message");
+        //print("onLaunch tetiklendi: $message");
       },
       onResume: (Map<String, dynamic> message) async {
-        print("onResume tetiklendi: $message");
+        // print("onResume tetiklendi: $message");
       },
     );
   }
@@ -109,7 +109,7 @@ class NotificationHandler {
     final _userModel = Provider.of<UserModel>(myContext);
 
     if (payload != null) {
-      debugPrint('notification payload: ' + payload);
+      // debugPrint('notification payload: ' + payload);
 
       Map<String, dynamic> gelenBildirim = await jsonDecode(payload);
 

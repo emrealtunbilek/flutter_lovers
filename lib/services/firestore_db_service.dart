@@ -30,7 +30,7 @@ class FirestoreDBService implements DBBase {
     Map<String, dynamic> _okunanUserBilgileriMap = _okunanUser.data;
 
     User _okunanUserNesnesi = User.fromMap(_okunanUserBilgileriMap);
-    print("Okunan user nesnesi :" + _okunanUserNesnesi.toString());
+    //print("Okunan user nesnesi :" + _okunanUserNesnesi.toString());
     return _okunanUserNesnesi;
   }
 
@@ -72,8 +72,8 @@ class FirestoreDBService implements DBBase {
 
     for (DocumentSnapshot tekKonusma in querySnapshot.documents) {
       Konusma _tekKonusma = Konusma.fromMap(tekKonusma.data);
-      print("okunan konusma tarisi:" +
-          _tekKonusma.olusturulma_tarihi.toDate().toString());
+      /*print("okunan konusma tarisi:" +
+          _tekKonusma.olusturulma_tarihi.toDate().toString());*/
       tumKonusmalar.add(_tekKonusma);
     }
 

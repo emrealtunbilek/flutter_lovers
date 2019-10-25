@@ -23,15 +23,16 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
 
   void _formSubmit() async {
     _formKey.currentState.save();
-    debugPrint("email :" + _email + " şifre:" + _sifre);
+    //debugPrint("email :" + _email + " şifre:" + _sifre);
+
     final _userModel = Provider.of<UserModel>(context);
 
     if (_formType == FormType.LogIn) {
       try {
         User _girisYapanUser =
             await _userModel.signInWithEmailandPassword(_email, _sifre);
-        if (_girisYapanUser != null)
-          print("Oturum açan user id:" + _girisYapanUser.userID.toString());
+        //if (_girisYapanUser != null)
+        //print("Oturum açan user id:" + _girisYapanUser.userID.toString());
       } on PlatformException catch (e) {
         PlatformDuyarliAlertDialog(
           baslik: "Oturum Açma HATA",
@@ -43,8 +44,8 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
       try {
         User _olusturulanUser =
             await _userModel.createUserWithEmailandPassword(_email, _sifre);
-        if (_olusturulanUser != null)
-          print("Oturum açan user id:" + _olusturulanUser.userID.toString());
+        /* if (_olusturulanUser != null)
+          print("Oturum açan user id:" + _olusturulanUser.userID.toString());*/
       } on PlatformException catch (e) {
         PlatformDuyarliAlertDialog(
           baslik: "Kullanıcı Oluşturma HATA",

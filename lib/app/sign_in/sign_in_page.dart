@@ -35,8 +35,8 @@ class _SignInPageState extends State<SignInPage> {
 
     try {
       User _user = await _userModel.signInWithFacebook();
-      if (_user != null)
-        print("Oturum açan user id:" + _user.userID.toString());
+      //if (_user != null){
+      //print("Oturum açan user id:" + _user.userID.toString());
     } on PlatformException catch (e) {
       print("FACEBOOK HATA YAKALANDI :" + e.message.toString());
       myHata = e;

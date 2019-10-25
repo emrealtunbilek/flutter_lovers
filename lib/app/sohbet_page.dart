@@ -21,6 +21,10 @@ class _SohbetPageState extends State<SohbetPage> {
   @override
   void initState() {
     super.initState();
+    if (AdmobIslemleri.myBannerAd != null) {
+      print("my banner null oldu chat sayfasında");
+      AdmobIslemleri.myBannerAd.dispose();
+    }
     _scrollController.addListener(_scrollListener);
 
     if (AdmobIslemleri.kacKereGosterildi <= 2) {

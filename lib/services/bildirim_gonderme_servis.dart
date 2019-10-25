@@ -22,8 +22,8 @@ class BildirimGondermeServis {
     if (response.statusCode == 200) {
       print("işlem basarılı");
     } else {
-      print("işlem basarısız:" + response.statusCode.toString());
-      print("jsonumuz:" + json);
+      /*print("işlem basarısız:" + response.statusCode.toString());
+      print("jsonumuz:" + json);*/
     }
   }
 }

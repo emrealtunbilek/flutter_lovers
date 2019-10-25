@@ -85,22 +85,20 @@ class ChatViewModel with ChangeNotifier {
   }
 
   Future<void> dahaFazlaMesajGetir() async {
-    print("Daha fazla mesaj getir tetiklendi - viewmodeldeyiz -");
-    if (_hasMore)
-      getMessageWithPagination(true);
-    else
-      print("Daha fazla eleman yok o yüzden çagrılmayacak");
+    //print("Daha fazla mesaj getir tetiklendi - viewmodeldeyiz -");
+    if (_hasMore) getMessageWithPagination(true);
+    /*else
+      print("Daha fazla eleman yok o yüzden çagrılmayacak");*/
     await Future.delayed(Duration(seconds: 2));
   }
 
   void yeniMesajListenerAta() {
-    print("Yeni mesajlar için listener atandı");
+    //print("Yeni mesajlar için listener atandı");
     _streamSubscription = _userRepository
         .getMessages(currentUser.userID, sohbetEdilenUser.userID)
         .listen((anlikData) {
       if (anlikData.isNotEmpty) {
-        print("listener tetiklendi ve son getirilen veri:" +
-            anlikData[0].toString());
+        //print("listener tetiklendi ve son getirilen veri:" +anlikData[0].toString());
 
         if (anlikData[0].date != null) {
           if (_listeyeEklenenIlkMesaj == null) {

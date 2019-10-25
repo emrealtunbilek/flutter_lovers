@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_lovers/admob_islemleri.dart';
 import 'package:flutter_lovers/common_widget/platform_duyarli_alert_dialog.dart';
 import 'package:flutter_lovers/common_widget/social_log_in_button.dart';
 import 'package:flutter_lovers/viewmodel/user_model.dart';
@@ -21,6 +22,12 @@ class _ProfilPageState extends State<ProfilPage> {
     // TODO: implement initState
     super.initState();
     _controllerUserName = TextEditingController();
+    AdmobIslemleri.myBannerAd = AdmobIslemleri.buildBannerAd();
+    AdmobIslemleri.myBannerAd
+      ..load()
+      ..show(anchorOffset: 180);
+    print(
+        " #################### banner kullanıcı sayfasında gosterilecek ######################");
   }
 
   @override
@@ -51,7 +58,7 @@ class _ProfilPageState extends State<ProfilPage> {
   Widget build(BuildContext context) {
     UserModel _userModel = Provider.of<UserModel>(context);
     _controllerUserName.text = _userModel.user.userName;
-    print("Profil sayfasındaki user degerleri :" + _userModel.user.toString());
+    //print("Profil sayfasındaki user degerleri :" + _userModel.user.toString());
     return Scaffold(
       appBar: AppBar(
         title: Text("Profil"),
@@ -195,7 +202,7 @@ class _ProfilPageState extends State<ProfilPage> {
     if (_profilFoto != null) {
       var url = await _userModel.uploadFile(
           _userModel.user.userID, "profil_foto", _profilFoto);
-      print("gelen url :" + url);
+      //print("gelen url :" + url);
 
       if (url != null) {
         PlatformDuyarliAlertDialog(

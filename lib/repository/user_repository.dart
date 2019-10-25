@@ -168,11 +168,11 @@ class UserRepository implements AuthBase {
         var token = "";
         if (kullaniciToken.containsKey(kaydedilecekMesaj.kime)) {
           token = kullaniciToken[kaydedilecekMesaj.kime];
-          print("Localden geldi:" + token);
+          //print("Localden geldi:" + token);
         } else {
           token = await _firestoreDBService.tokenGetir(kaydedilecekMesaj.kime);
           if (token != null) kullaniciToken[kaydedilecekMesaj.kime] = token;
-          print("Veri tabanından geldi:" + token);
+          //print("Veri tabanından geldi:" + token);
         }
 
         if (token != null)
@@ -199,14 +199,14 @@ class UserRepository implements AuthBase {
             listedeUserBul(oankiKonusma.kimle_konusuyor);
 
         if (userListesindekiKullanici != null) {
-          print("VERILER LOCAL CACHEDEN OKUNDU");
+          //print("VERILER LOCAL CACHEDEN OKUNDU");
           oankiKonusma.konusulanUserName = userListesindekiKullanici.userName;
           oankiKonusma.konusulanUserProfilURL =
               userListesindekiKullanici.profilURL;
         } else {
-          print("VERILER VERITABANINDAN OKUNDU");
-          print(
-              "aranılan user daha önceden veritabanından getirilmemiş, o yüzden veritabanından bu degeri okumalıyız");
+          //print("VERILER VERITABANINDAN OKUNDU");
+          /*print(
+              "aranılan user daha önceden veritabanından getirilmemiş, o yüzden veritabanından bu degeri okumalıyız");*/
           var _veritabanindanOkunanUser =
               await _firestoreDBService.readUser(oankiKonusma.kimle_konusuyor);
           oankiKonusma.konusulanUserName = _veritabanindanOkunanUser.userName;

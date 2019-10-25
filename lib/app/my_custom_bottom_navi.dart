@@ -1,4 +1,3 @@
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lovers/admob_islemleri.dart';
@@ -24,55 +23,48 @@ class MyCustomBottomNavigation extends StatefulWidget {
 }
 
 class _MyCustomBottomNavigationState extends State<MyCustomBottomNavigation> {
-  BannerAd myBannerAd;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     AdmobIslemleri.admobInitialize();
-    myBannerAd = AdmobIslemleri.buildBannerAd();
+    if (AdmobIslemleri.myBannerAd == null) {
+      print("my banner null atanacak");
+    }
 
     //myBannerAd.load();
   }
 
   @override
   void dispose() {
-    myBannerAd.dispose();
+    if (AdmobIslemleri.myBannerAd != null) {
+      AdmobIslemleri.myBannerAd.dispose();
+      AdmobIslemleri.myBannerAd = null;
+      print("my banner null oldu");
+    }
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    myBannerAd
-      ..load()
-      ..show(anchorOffset: 0);
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: CupertinoTabScaffold(
-            tabBar: CupertinoTabBar(
-              items: [
-                _navItemOlustur(TabItem.Kullanicilar),
-                _navItemOlustur(TabItem.Konusmalarim),
-                _navItemOlustur(TabItem.Profil),
-              ],
-              onTap: (index) => widget.onSelectedTab(TabItem.values[index]),
-            ),
-            tabBuilder: (context, index) {
-              final gosterilecekItem = TabItem.values[index];
-              return CupertinoTabView(
-                  navigatorKey: widget.navigatorKeys[gosterilecekItem],
-                  builder: (context) {
-                    return widget.sayfaOlusturucu[gosterilecekItem];
-                  });
-            },
-          ),
-        ),
-        SizedBox(
-          height: 45,
-        ),
-      ],
+    return CupertinoTabScaffold(
+      tabBar: CupertinoTabBar(
+        items: [
+          _navItemOlustur(TabItem.Kullanicilar),
+          _navItemOlustur(TabItem.Konusmalarim),
+          _navItemOlustur(TabItem.Profil),
+        ],
+        onTap: (index) => widget.onSelectedTab(TabItem.values[index]),
+      ),
+      tabBuilder: (context, index) {
+        final gosterilecekItem = TabItem.values[index];
+        return CupertinoTabView(
+            navigatorKey: widget.navigatorKeys[gosterilecekItem],
+            builder: (context) {
+              return widget.sayfaOlusturucu[gosterilecekItem];
+            });
+      },
     );
   }
 

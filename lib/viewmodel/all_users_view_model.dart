@@ -52,7 +52,7 @@ class AllUserViewModel with ChangeNotifier {
       _hasMore = false;
     }
 
-    yeniListe.forEach((usr) => print("Getirilen username:" + usr.userName));
+    //yeniListe.forEach((usr) => print("Getirilen username:" + usr.userName));
 
     _tumKullanicilar.addAll(yeniListe);
 
@@ -60,11 +60,10 @@ class AllUserViewModel with ChangeNotifier {
   }
 
   Future<void> dahaFazlaUserGetir() async {
-    print("Daha fazla user getir tetiklendi - viewmodeldeyiz -");
-    if (_hasMore)
-      getUserWithPagination(_enSonGetirilenUser, true);
-    else
-      print("Daha fazla eleman yok o yüzden çagrılmayacak");
+    // print("Daha fazla user getir tetiklendi - viewmodeldeyiz -");
+    if (_hasMore) getUserWithPagination(_enSonGetirilenUser, true);
+    //else
+    //print("Daha fazla eleman yok o yüzden çagrılmayacak");
     await Future.delayed(Duration(seconds: 2));
   }
 

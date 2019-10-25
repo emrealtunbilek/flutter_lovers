@@ -94,8 +94,8 @@ class FirebaseAuthService implements AuthBase {
           FirebaseUser _user = _firebaseResult.user;
           return _userFromFirebase(_user);
         } else {
-          print("access token valid :" +
-              _faceResult.accessToken.isValid().toString());
+          /* print("access token valid :" +
+              _faceResult.accessToken.isValid().toString());*/
         }
 
         break;
