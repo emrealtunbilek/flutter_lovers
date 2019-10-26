@@ -5,9 +5,16 @@ class Mesaj {
   final String kime;
   final bool bendenMi;
   final String mesaj;
+  final String konusmaSahibi;
   final Timestamp date;
 
-  Mesaj({this.kimden, this.kime, this.bendenMi, this.mesaj, this.date});
+  Mesaj(
+      {this.kimden,
+      this.kime,
+      this.bendenMi,
+      this.mesaj,
+      this.date,
+      this.konusmaSahibi});
 
   Map<String, dynamic> toMap() {
     return {
@@ -15,6 +22,7 @@ class Mesaj {
       'kime': kime,
       'bendenMi': bendenMi,
       'mesaj': mesaj,
+      'konusmaSahibi': konusmaSahibi,
       'date': date ?? FieldValue.serverTimestamp(),
     };
   }
@@ -24,6 +32,7 @@ class Mesaj {
         kime = map['kime'],
         bendenMi = map['bendenMi'],
         mesaj = map['mesaj'],
+        konusmaSahibi = map['konusmaSahibi'],
         date = map['date'];
 
   @override

@@ -90,7 +90,7 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
                     child: Column(
                       children: <Widget>[
                         TextFormField(
-                          initialValue: "emre@emre.com",
+                          //initialValue: "emre@emre.com",
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             errorText: _userModel.emailHataMesaji != null
@@ -109,7 +109,7 @@ class _EmailveSifreLoginPageState extends State<EmailveSifreLoginPage> {
                           height: 8,
                         ),
                         TextFormField(
-                          initialValue: "password",
+                          //initialValue: "password",
                           obscureText: true,
                           decoration: InputDecoration(
                             errorText: _userModel.sifreHataMesaji != null

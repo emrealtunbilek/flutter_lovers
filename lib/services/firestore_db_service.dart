@@ -102,6 +102,7 @@ class FirestoreDBService implements DBBase {
         .collection("konusmalar")
         .document(currentUserID + "--" + sohbetEdilenUserID)
         .collection("mesajlar")
+        .where("konusmaSahibi", isEqualTo: currentUserID)
         .orderBy("date", descending: true)
         .limit(1)
         .snapshots();
@@ -135,6 +136,8 @@ class FirestoreDBService implements DBBase {
     });
 
     _kaydedilecekMesajMapYapisi.update("bendenMi", (deger) => false);
+    _kaydedilecekMesajMapYapisi.update(
+        "konusmaSahibi", (deger) => kaydedilecekMesaj.kime);
 
     await _firebaseDB
         .collection("konusmalar")
@@ -213,6 +216,7 @@ class FirestoreDBService implements DBBase {
           .collection("konusmalar")
           .document(currentUserID + "--" + sohbetEdilenUserID)
           .collection("mesajlar")
+          .where("konusmaSahibi", isEqualTo: currentUserID)
           .orderBy("date", descending: true)
           .limit(getirilecekElemanSayisi)
           .getDocuments();
@@ -221,6 +225,7 @@ class FirestoreDBService implements DBBase {
           .collection("konusmalar")
           .document(currentUserID + "--" + sohbetEdilenUserID)
           .collection("mesajlar")
+          .where("konusmaSahibi", isEqualTo: currentUserID)
           .orderBy("date", descending: true)
           .startAfter([enSonGetirilenMesaj.date])
           .limit(getirilecekElemanSayisi)

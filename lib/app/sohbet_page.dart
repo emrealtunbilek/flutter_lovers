@@ -127,6 +127,7 @@ class _SohbetPageState extends State<SohbetPage> {
                     kimden: _chatModel.currentUser.userID,
                     kime: _chatModel.sohbetEdilenUser.userID,
                     bendenMi: true,
+                    konusmaSahibi: _chatModel.currentUser.userID,
                     mesaj: _mesajController.text,
                   );
 
