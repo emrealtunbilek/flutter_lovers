@@ -25,13 +25,13 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   void _googleIleGiris(BuildContext context) async {
-    final _userModel = Provider.of<UserModel>(context);
+    final _userModel = Provider.of<UserModel>(context,listen: false);
     User _user = await _userModel.signInWithGoogle();
     if (_user != null) print("Oturum açan user id:" + _user.userID.toString());
   }
 
   void _facebookIleGiris(BuildContext context) async {
-    final _userModel = Provider.of<UserModel>(context);
+    final _userModel = Provider.of<UserModel>(context,listen: false);
 
     try {
       User _user = await _userModel.signInWithFacebook();
