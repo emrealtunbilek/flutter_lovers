@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      builder: (context) => UserModel(),
+      create: (context) => UserModel(),
       child: MaterialApp(
           title: 'Flutter Lovers',
           debugShowCheckedModeBanner: false,
