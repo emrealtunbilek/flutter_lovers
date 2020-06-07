@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final _userModel = Provider.of<UserModel>(context);
+    final _userModel = Provider.of<UserModel>(context, listen: true);  // "listen" default olarak "true " kabul edildigi icin bunu yazmaya da bilisiniz
     if (_userModel.state == ViewState.Idle) {
       if (_userModel.user == null) {
         return SignInPage();
